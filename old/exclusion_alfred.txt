@@ -1,0 +1,73 @@
+library(data.table); library(factoextra)
+setwd("C:/Users/alfredp/Desktop/Somalogic")
+rm(list = ls()); gc()
+
+a = as.data.frame(fread("data/somalogic_normalised"))
+
+n_col = ncol(a)
+n_row = nrow(a)
+
+covar = as.data.frame(fread("data/raw.covar")[,-2])
+a = as.data.frame(merge(a, covar, by.x = "FID"))
+
+rntransform = function(data){
+  out = rank(data) - 0.5
+  out[is.na(data)] = NA
+  out = out/(max(out, na.rm = T) + 0.5)
+  out = qnorm(out)
+  out
+}
+
+a[,3:n_col] = log(a[,3:n_col])
+
+covar = a[,-c(3:n_col)]
+for(i in 3:n_col){
+  covar$y = a[,i]
+  a[,i] = lm("y ~ age + age2 + sex + factor(rc) + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + PC11", covar)$resid
+  covar$y = NULL
+  print(i)
+}
+
+for(i in 3:n_col){
+  a$y = a[,i]
+  a[,i] = rntransform(a$y)
+  a$y = NULL
+  print(i)
+}
+
+comp2 = svd(a[,3:n_col])
+
+means=c(1:10)
+for (i in c(1:10)) {
+  means[i]=mean(comp2$u[,i])
+}
+stdevs=c(1:10)
+for (i in c(1:10)) {
+  stdevs[i]=sd(comp2$u[,i])
+}
+Zs=comp2$u[,c(1:10)]
+for (i in c(1:length(Zs[,1]))) {
+  Zs[i,]=(Zs[i,]-means)/stdevs
+}
+exclude=c(1:n_row)
+for (i in c(1:n_row)) {
+  exclude[i]=max(abs(Zs[i,c(1:10)]))>5 # first 10 PCs based on scree plot
+}
+list_ids=as.data.frame(cbind(dimnames(Zs)[[1]],exclude))
+table(list_ids)
+
+a = as.data.frame(fread("data/somalogic_normalised"))
+a[,3:n_col] = log(a[,3:n_col])
+a = a[list_ids==0,]
+
+covar = as.data.frame(fread("data/raw.covar")[,-2])
+a = as.data.frame(merge(a, covar, by.x = "FID"))
+covar = a[,-c(3:n_col)]
+
+for(i in 3:n_col){
+  covar$y = a[,i]
+  a[,i] = rntransform(lm("y ~ age + age2 + sex + factor(rc) + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + PC11", covar)$resid)
+  print(i)
+}
+
+write.table(a[,1:n_col], "data/phen_n", row.names = F, quote = F)
