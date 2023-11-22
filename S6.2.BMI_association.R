@@ -1,6 +1,6 @@
 rm(list = ls())
 
-setwd("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data")
+setwd("")
 
 library(ggplot2)
 library(ggpubr)
@@ -128,9 +128,6 @@ n_sig <- sum(bmi$olink_sig_bonferroni!="n.s.")
 
 # label top ten
 
-# olink_top <- bmi[order(bmi$olink_p_bmi_calc)[1:10],]
-# olink_top$olink_p_bmi_calc[-log(olink_top$olink_p_bmi_calc,10)>150] <- 10^(-150)
-
 olink_top <- bmi[bmi$olink_id %in% top,]
 olink_top$olink_p_bmi_calc[-log(olink_top$olink_p_bmi_calc,10)>150] <- 10^(-150)
 
@@ -170,9 +167,6 @@ bmi$soma_normal_sig_bonferroni <- factor(bmi$soma_normal_sig_bonferroni,levels=c
 table(bmi$soma_normal_sig_bonferroni)
 n_sig <- sum(bmi$soma_normal_sig_bonferroni!="n.s.")
 
-# soma_normal_top <- bmi[order(bmi$soma_normal_p_bmi_calc)[1:10],]
-# soma_normal_top$soma_normal_p_bmi_calc[-log(soma_normal_top$soma_normal_p_bmi_calc,10)>150] <- 10^(-150)
-
 soma_normal_top <- bmi[bmi$olink_id %in% top,]
 soma_normal_top$soma_normal_p_bmi_calc[-log(soma_normal_top$soma_normal_p_bmi_calc,10)>150] <- 10^(-150)
 
@@ -211,9 +205,6 @@ bmi$soma_non_normal_sig_bonferroni <- factor(bmi$soma_non_normal_sig_bonferroni,
 table(bmi$soma_non_normal_sig_bonferroni)
 n_sig <- sum(bmi$soma_non_normal_sig_bonferroni!="n.s.")
 
-# soma_non_normal_top <- bmi[order(bmi$soma_non_normal_p_bmi_calc)[1:10],]
-# soma_non_normal_top$soma_non_normal_p_bmi_calc[-log(soma_non_normal_top$soma_non_normal_p_bmi_calc,10)>150] <- 10^(-150)
-
 soma_non_normal_top <- bmi[bmi$olink_id %in% top,]
 soma_non_normal_top$soma_non_normal_p_bmi_calc[-log(soma_non_normal_top$soma_non_normal_p_bmi_calc,10)>150] <- 10^(-150)
 
@@ -249,7 +240,7 @@ volcano_soma_non_normal
 
 volcano_combined <- ggarrange(volcano_olink,volcano_soma_norm,volcano_soma_non_normal,ncol=3,nrow=1)
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/bmi_volcano_plot_bonferroni.png",volcano_combined,width=14,height=6)
+ggsave("bmi_volcano_plot_bonferroni.png",volcano_combined,width=14,height=6)
 
 
 
@@ -297,7 +288,7 @@ venn_diagram_bmi_olink_soma_normal[[7]]$label <- paste(venn_diagram_bmi_olink_so
 grid.newpage()
 grid.draw(venn_diagram_bmi_olink_soma_normal)
 
-png("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_bmi_olink_soma_normal_bonferroni.png",width = 1600, height = 1600, pointsize=70)
+png("venn_diagram_bmi_olink_soma_normal_bonferroni.png",width = 1600, height = 1600, pointsize=70)
 grid.draw(venn_diagram_bmi_olink_soma_normal)
 dev.off()
 
@@ -345,7 +336,7 @@ scatter_normal <- ggplot(bmi, aes(x=olink_es_bmi_calc*bmi_sd, y=soma_normal_es_b
 
 scatter_normal
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/bmi_scatter_plot_normal_bonferroni.png",scatter_normal,width=6,height=6,bg = "white")
+ggsave("bmi_scatter_plot_normal_bonferroni.png",scatter_normal,width=6,height=6,bg = "white")
 
 # olink vs non-normal
 
@@ -379,7 +370,7 @@ venn_diagram_bmi_olink_soma_non_normal[[7]]$label <- paste(venn_diagram_bmi_olin
 grid.newpage()
 grid.draw(venn_diagram_bmi_olink_soma_non_normal)
 
-png("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_bmi_olink_soma_non_normal_bonferroni.png",width = 1600, height = 1600, pointsize=70)
+png("venn_diagram_bmi_olink_soma_non_normal_bonferroni.png",width = 1600, height = 1600, pointsize=70)
 grid.draw(venn_diagram_bmi_olink_soma_non_normal)
 dev.off()
 
@@ -428,11 +419,9 @@ scatter_non_normal <- ggplot(bmi, aes(x=olink_es_bmi_calc*bmi_sd, y=soma_non_nor
 
 scatter_non_normal
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/bmi_scatter_plot_non_normal_bonferroni.png",scatter_non_normal,width=6,height=6,bg = "white")
+ggsave("bmi_scatter_plot_non_normal_bonferroni.png",scatter_non_normal,width=6,height=6,bg = "white")
 
 scatter_plot <- ggarrange(scatter_normal,scatter_non_normal,ncol=2,nrow=1)
-
-# ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/bmi_scatter_plot.png",scatter_plot,width=12,height=6,bg = "white")
 
 # normal vs non-normal
 
@@ -466,7 +455,7 @@ venn_diagram_bmi_soma[[7]]$label <- paste(venn_diagram_bmi_soma[[7]]$label, "\n"
 grid.newpage()
 grid.draw(venn_diagram_bmi_soma)
 
-png("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_bmi_soma_bonferroni.png",width = 1600, height = 1600, pointsize=70)
+png("venn_diagram_bmi_soma_bonferroni.png",width = 1600, height = 1600, pointsize=70)
 grid.draw(venn_diagram_bmi_soma)
 dev.off()
 
@@ -509,7 +498,7 @@ scatter_plot_soma <- ggplot(bmi, aes(x=soma_normal_es_bmi_calc*bmi_sd, y=soma_no
 
 scatter_plot_soma
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/bmi_scatter_plot_soma_bonferroni.png",scatter_plot_soma,width=6,height=6,bg = "white")
+ggsave("bmi_scatter_plot_soma_bonferroni.png",scatter_plot_soma,width=6,height=6,bg = "white")
 
 
 
@@ -566,7 +555,7 @@ hist_bmi_non_normal
 
 hist_bmi <- ggarrange(hist_bmi_normal,hist_bmi_non_normal,ncol=2,nrow=1)
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/hist_bmi_bonferroni.png",hist_bmi,width=14,height=6)
+ggsave("hist_bmi_bonferroni.png",hist_bmi,width=14,height=6)
 
 
 
@@ -633,7 +622,7 @@ hist_bmi_shared_non_normal
 
 hist_bmi_shared <- ggarrange(hist_bmi_shared_normal,hist_bmi_shared_non_normal,ncol=2,nrow=1)
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/hist_bmi_shared_bonferroni.png",hist_bmi_shared,width=14,height=6)
+ggsave("hist_bmi_shared_bonferroni.png",hist_bmi_shared,width=14,height=6)
 
 
 
@@ -704,9 +693,6 @@ table(bmi$olink_sig_fdr)
 n_sig <- sum(bmi$olink_sig_fdr!="n.s.")
 
 # label top ten
-
-# olink_top <- bmi[order(bmi$olink_p_bmi_calc)[1:10],]
-# olink_top$olink_p_bmi_calc[-log(olink_top$olink_p_bmi_calc,10)>150] <- 10^(-150)
 
 olink_top <- bmi[bmi$olink_id %in% top,]
 olink_top$olink_p_bmi_calc[-log(olink_top$olink_p_bmi_calc,10)>150] <- 10^(-150)
@@ -788,9 +774,6 @@ bmi$soma_non_normal_sig_fdr <- factor(bmi$soma_non_normal_sig_fdr,levels=c("Posi
 table(bmi$soma_non_normal_sig_fdr)
 n_sig <- sum(bmi$soma_non_normal_sig_fdr!="n.s.")
 
-# soma_non_normal_top <- bmi[order(bmi$soma_non_normal_p_bmi_calc)[1:10],]
-# soma_non_normal_top$soma_non_normal_p_bmi_calc[-log(soma_non_normal_top$soma_non_normal_p_bmi_calc,10)>150] <- 10^(-150)
-
 soma_non_normal_top <- bmi[bmi$olink_id %in% top,]
 soma_non_normal_top$soma_non_normal_p_bmi_calc[-log(soma_non_normal_top$soma_non_normal_p_bmi_calc,10)>150] <- 10^(-150)
 
@@ -826,7 +809,7 @@ volcano_soma_non_normal
 
 volcano_combined <- ggarrange(volcano_olink,volcano_soma_norm,volcano_soma_non_normal,ncol=3,nrow=1)
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/bmi_volcano_plot_fdr.png",volcano_combined,width=14,height=6)
+ggsave("bmi_volcano_plot_fdr.png",volcano_combined,width=14,height=6)
 
 
 
@@ -874,7 +857,7 @@ venn_diagram_bmi_olink_soma_normal[[7]]$label <- paste(venn_diagram_bmi_olink_so
 grid.newpage()
 grid.draw(venn_diagram_bmi_olink_soma_normal)
 
-png("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_bmi_olink_soma_normal_fdr.png",width = 1600, height = 1600, pointsize=70)
+png("venn_diagram_bmi_olink_soma_normal_fdr.png",width = 1600, height = 1600, pointsize=70)
 grid.draw(venn_diagram_bmi_olink_soma_normal)
 dev.off()
 
@@ -922,7 +905,7 @@ scatter_normal <- ggplot(bmi, aes(x=olink_es_bmi_calc*bmi_sd, y=soma_normal_es_b
 
 scatter_normal
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/bmi_scatter_plot_normal_fdr.png",scatter_normal,width=6,height=6,bg = "white")
+ggsave("bmi_scatter_plot_normal_fdr.png",scatter_normal,width=6,height=6,bg = "white")
 
 # olink vs non-normal
 
@@ -956,7 +939,7 @@ venn_diagram_bmi_olink_soma_non_normal[[7]]$label <- paste(venn_diagram_bmi_olin
 grid.newpage()
 grid.draw(venn_diagram_bmi_olink_soma_non_normal)
 
-png("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_bmi_olink_soma_non_normal_fdr.png",width = 1600, height = 1600, pointsize=70)
+png("venn_diagram_bmi_olink_soma_non_normal_fdr.png",width = 1600, height = 1600, pointsize=70)
 grid.draw(venn_diagram_bmi_olink_soma_non_normal)
 dev.off()
 
@@ -1005,11 +988,11 @@ scatter_non_normal <- ggplot(bmi, aes(x=olink_es_bmi_calc*bmi_sd, y=soma_non_nor
 
 scatter_non_normal
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/bmi_scatter_plot_non_normal_fdr.png",scatter_non_normal,width=6,height=6,bg = "white")
+ggsave("bmi_scatter_plot_non_normal_fdr.png",scatter_non_normal,width=6,height=6,bg = "white")
 
 scatter_plot <- ggarrange(scatter_normal,scatter_non_normal,ncol=2,nrow=1)
 
-# ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/bmi_scatter_plot.png",scatter_plot,width=12,height=6,bg = "white")
+# ggsave("bmi_scatter_plot.png",scatter_plot,width=12,height=6,bg = "white")
 
 # normal vs non-normal
 
@@ -1043,7 +1026,7 @@ venn_diagram_bmi_soma[[7]]$label <- paste(venn_diagram_bmi_soma[[7]]$label, "\n"
 grid.newpage()
 grid.draw(venn_diagram_bmi_soma)
 
-png("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_bmi_soma_fdr.png",width = 1600, height = 1600, pointsize=70)
+png("venn_diagram_bmi_soma_fdr.png",width = 1600, height = 1600, pointsize=70)
 grid.draw(venn_diagram_bmi_soma)
 dev.off()
 
@@ -1086,7 +1069,7 @@ scatter_plot_soma <- ggplot(bmi, aes(x=soma_normal_es_bmi_calc*bmi_sd, y=soma_no
 
 scatter_plot_soma
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/bmi_scatter_plot_soma_fdr.png",scatter_plot_soma,width=6,height=6,bg = "white")
+ggsave("bmi_scatter_plot_soma_fdr.png",scatter_plot_soma,width=6,height=6,bg = "white")
 
 
 
@@ -1143,7 +1126,7 @@ hist_bmi_non_normal
 
 hist_bmi <- ggarrange(hist_bmi_normal,hist_bmi_non_normal,ncol=2,nrow=1)
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/hist_bmi_fdr.png",hist_bmi,width=14,height=6)
+ggsave("hist_bmi_fdr.png",hist_bmi,width=14,height=6)
 
 
 
@@ -1208,5 +1191,5 @@ hist_bmi_shared_non_normal
 
 hist_bmi_shared <- ggarrange(hist_bmi_shared_normal,hist_bmi_shared_non_normal,ncol=2,nrow=1)
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/hist_bmi_shared_fdr.png",hist_bmi_shared,width=14,height=6)
+ggsave("hist_bmi_shared_fdr.png",hist_bmi_shared,width=14,height=6)
 

@@ -1,6 +1,6 @@
 rm(list = ls())
 
-setwd("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data")
+setwd("")
 
 library(readxl)
 library(tidyverse)
@@ -9,7 +9,7 @@ library(RNOmni)
 
 ## load olink ckb data
 
-olink_all <- read.csv("K:/kadoorie/Staff_Folders/BaihanW/data/DAR-2023-00244-V1/data_baseline_olink_explore.csv")
+olink_all <- read.csv("")
 
 # olink_test <- pivot_wider(olink_all[,c(1,3,5)], id_cols = csid, names_from = assay, values_from = npx)
 
@@ -40,7 +40,7 @@ write.csv(olink,"olink.csv", quote=F, row.names=F)
 
 # load normalised somascan data
 
-somascan_normalised <- read.csv("K:/kadoorie/Staff_Folders/BaihanW/data/DAR-2023-00244-V1/data_baseline_somalogic.csv")
+somascan_normalised <- read.csv("")
 
 # change to wide format
 
@@ -50,7 +50,7 @@ somascan_normalised <- somascan_normalised[somascan_normalised$qc==0,-c(2,3)]
 
 ## load non-normalised somascan data 
 
-somascan_non_normalised <- read.csv("K:/kadoorie/Staff_Folders/BaihanW/data/DAR-2023-00244-V1/data_baseline_somalogic_qc.csv")
+somascan_non_normalised <- read.csv("")
 
 # change to wide format
 

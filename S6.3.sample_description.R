@@ -3,7 +3,7 @@ rm(list = ls())
 library(datawizard)
 library(gtsummary)
 
-setwd("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data")
+setwd("")
 
 olink_pheno <- read.csv("olink_pheno.csv")
 

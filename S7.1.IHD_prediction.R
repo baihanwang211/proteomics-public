@@ -1,6 +1,6 @@
 rm(list = ls())
 
-setwd("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data")
+setwd("")
 
 library(ckbplotr)
 
@@ -379,4 +379,4 @@ plot_prediction_bg <- plot_prediction + theme(plot.background = element_rect(fil
 
 plot_prediction_bg
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_prediction_bg.png",plot_prediction_bg,width=10,height=8)
+ggsave("plot_prediction_bg.png",plot_prediction_bg,width=10,height=8)

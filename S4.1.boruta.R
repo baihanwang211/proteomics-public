@@ -1,6 +1,6 @@
 rm(list = ls())
 
-setwd("/gpfs3/well/ckb/users/dma206/proteomics/data")
+setwd("")
 
 library(Boruta)
 

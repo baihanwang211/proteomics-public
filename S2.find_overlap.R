@@ -1,6 +1,6 @@
 rm(list = ls())
 
-setwd("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data")
+setwd("")
 
 library(readxl)
 library(tidyverse)
@@ -11,7 +11,7 @@ library(RColorBrewer)
 
 # firstly load linkage file for uniprot id
 
-olink_protein <- read_excel("K:/kadoorie/Staff_Folders/BaihanW/data/DAR-2023-00244-V1/olink_uniprot.xlsx")[c(1,3,4)]
+olink_protein <- read_excel("")[c(1,3,4)]
 
 names(olink_protein) <- c("uniprot_id","olink_id","panel")
 
@@ -19,25 +19,11 @@ olink_protein <- olink_protein[!duplicated(olink_protein$olink_id),]
 
 olink_protein$olink_id <- gsub("-",".",olink_protein$olink_id)
 
-# olink_protein$olink_id <- tolower(olink_protein$olink_id)
-# 
-# olink_protein$olink_id <- paste0("ol_", olink_protein$olink_id)
-# 
-# olink_protein$olink_id <- gsub("-","_",olink_protein$olink_id)
-
 olink_protein$batch <- 1
 
 olink_protein[grep("II",olink_protein$panel),]$batch <-2
 
 ## load olink ckb data
-
-# long format to get lod
-
-# olink_all <- read.csv("K:/kadoorie/Staff_Folders/BaihanW/data/DAR-2023-00244-V1/data_baseline_olink_explore.csv")
-# 
-# olink_lod <- olink_all[!duplicated(olink_all$csid),c("csid","lod")]
-# 
-# names(olink_lod)[2] <- "olink_lod"
 
 # wide format
 
@@ -54,7 +40,7 @@ olink_protein <- olink_protein[which(olink_protein$olink_id %in% names(olink)),]
 
 # load linkage file first
 
-somascan_protein <- read.csv("K:/kadoorie/Staff_Folders/BaihanW/data/DAR-2023-00244-V1/somalogic_meta.csv")[,c("aptname","uniprot","dilution2","organism")]
+somascan_protein <- read.csv("")[,c("aptname","uniprot","dilution2","organism")]
 
 names(somascan_protein)[1:3] <- c("somascan_id","uniprot_id","dilution")
 
@@ -73,13 +59,6 @@ length(unique(somascan_protein_human_long$uniprot_id))
 n_aptamer <- data.frame(table(somascan_protein_human_long$uniprot_id))
 
 n_aptamer_sum <- data.frame(table(n_aptamer$Freq))
-
-# somascan_protein_1_to_1 <- somascan_protein_1_to_1[,-2]
-# 
-# somascan_protein_1_to_1 <- somascan_protein_1_to_1[!is.na(somascan_protein_1_to_1$uniprot_id),]
-# 
-# somascan_protein_1_to_1 <- somascan_protein_1_to_1[!(duplicated(somascan_protein_1_to_1$somascan_id) | duplicated(somascan_protein_1_to_1$somascan_id, fromLast = TRUE) |
-#                                                      duplicated(somascan_protein_1_to_1$uniprot_id) | duplicated(somascan_protein_1_to_1$uniprot_id, fromLast = TRUE)), ]
 
 ## merge 
 
@@ -112,7 +91,7 @@ length(unique(c(somascan_protein$uniprot_id_1,somascan_protein$uniprot_id_2,soma
 
 venn.diagram(
   list(Olink = 1:2923, SomaScan = 756:7152),
-  filename = 'K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram.png',
+  filename = 'venn_diagram.png',
   fontfamily = "sans",	cat.fontfamily = "sans",
   category.names = c("Olink Explore 3072" , "SomaScan Assay v4.1"),
   height = 2500, 
@@ -123,7 +102,7 @@ venn.diagram(
 
 venn.diagram(
   list(Olink = 1:2923, SomaScan = 756:7152),
-  filename = 'K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_big_font.png',
+  filename = 'venn_diagram_big_font.png',
   fontfamily = "sans",	cat.fontfamily = "sans",
   category.names = c("" , ""),
   height = 1250, 
@@ -139,12 +118,9 @@ table(overlap$organism) # check if they are human proteins (they all are)
 
 overlap <- overlap[,-which(names(overlap) %in% "organism")]
 
-write.csv(overlap,"K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/overlap.csv", quote=F, row.names=F)
+write.csv(overlap,"overlap.csv", quote=F, row.names=F)
 
 
-# load 
-
-# overlap <- read.csv("overlap.csv")
 
 ## find one to one proteins
 
@@ -185,13 +161,3 @@ sum(duplicated(overlap_1_to_1$uniprot_id))
 sum(duplicated(overlap_1_to_1$somascan_id))
 
 write.csv(overlap_1_to_1,"overlap_1_to_1.csv", quote=F, row.names=F)
-
-# overlap_1_to_1 <- read.csv("./overlap_1_to_1.csv")
-
-## compare old and new data
-
-# overlap_old <- read.csv("./old/overlap.csv")
-# 
-# setdiff(overlap$uniprot_id,overlap_old$uniprot_id)
-# 
-# names(olink)[grep("HLA",names(olink))]

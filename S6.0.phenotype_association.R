@@ -1,6 +1,6 @@
 rm(list = ls())
 
-setwd("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data")
+setwd("")
 
 library(ggplot2)
 library(ggpubr)
@@ -30,20 +30,6 @@ somascan_non_normalised_log <- somascan_non_normalised_log[,c(1, which(names(som
 olink[,c(2:ncol(olink))] <- scale(olink[,c(2:ncol(olink))])
 somascan_normalised_log[,c(2:ncol(somascan_normalised_log))] <- scale(somascan_normalised_log[,c(2:ncol(somascan_normalised_log))])
 somascan_non_normalised_log[,c(2:ncol(somascan_non_normalised_log))] <- scale(somascan_non_normalised_log[,c(2:ncol(somascan_non_normalised_log))])
-
-# ## exclude outliers
-# 
-# for (i in 2:ncol(olink)) {
-#   olink[olink[,i] < -4 | olink[,i] > 4,i] <- NA
-# }
-# 
-# for (i in 2:ncol(somascan_normalised_log)) {
-#   somascan_normalised_log[somascan_normalised_log[,i] < -4 | somascan_normalised_log[,i] > 4,i] <- NA
-# }
-# 
-# for (i in 2:ncol(somascan_non_normalised_log)) {
-#   somascan_non_normalised_log[somascan_non_normalised_log[,i] < -4 | somascan_non_normalised_log[,i] > 4,i] <- NA
-# }
 
 ## load plate id
 
@@ -167,18 +153,14 @@ summary(baseline_var$alcohol_regular_vs_occasion)
 
 ## load ascertainment
 
-ascertainment <- read.csv("K:/kadoorie/Staff_Folders/BaihanW/data/DAR-2023-00244-V1/data_baseline_ascertainments.csv")
+ascertainment <- read.csv("data_baseline_ascertainments.csv")
 table(ascertainment$olinkexp1536_chd_b1_subcohort)
 ascertainment <- ascertainment[,c("csid","olinkexp1536_chd_b1_subcohort")]
 names(ascertainment) <- c("csid","ascertainment")
 ascertainment <- ascertainment[!is.na(ascertainment$ascertainment),]
 ascertainment$ascertainment <- factor(ascertainment$ascertainment,levels=c("1","0"))
 table(ascertainment$ascertainment)
-# subcohort_id <- ascertainment$csid[ascertainment$olinkexp1536_chd_b1_subcohort==1]
 
-## load blood sample processing time
-
-# processing <- read.csv("C:/Users/Baihanw/OneDrive - Nexus365/Documents/data/DAR-2023-00301-V2/DAR-2023-00301.blood_sample_processing_v26.csv")
 
 ## merge
 
@@ -194,24 +176,10 @@ somascan_non_normalised_log_pheno <- merge(somascan_non_normalised_log, baseline
 somascan_non_normalised_log_pheno <- merge(somascan_non_normalised_log_pheno, somascan_plate, by="csid", all.x=T)
 somascan_non_normalised_log_pheno <- merge(somascan_non_normalised_log_pheno, ascertainment, by="csid", all.x=T)
 
-## only keep subcohort
-
-# olink_pheno <- olink_pheno[olink_pheno$csid %in% subcohort_id, ]
-# somascan_normalised_log_pheno <- somascan_normalised_log_pheno[somascan_normalised_log_pheno$csid %in% subcohort_id, ]
-# somascan_non_normalised_log_pheno <- somascan_non_normalised_log_pheno[somascan_non_normalised_log_pheno$csid %in% subcohort_id, ]
-
-# keep same participants
-# olink_pheno <- olink_pheno[olink_pheno$csid %in% somascan_normalised_log_pheno$csid, ]
-
 # save
 write.csv(olink_pheno, "olink_pheno.csv", row.names = F, quote = F)
 write.csv(somascan_normalised_log_pheno, "somascan_normalised_log_pheno.csv", row.names = F, quote = F)
 write.csv(somascan_non_normalised_log_pheno, "somascan_non_normalised_log_pheno.csv", row.names = F, quote = F)
-
-# ncol(olink_pheno)
-# ncol(olink)
-# pheno <- olink_pheno[,c(1,(ncol(olink)+1):ncol(olink_pheno))]
-# write.csv(pheno, "pheno.csv", row.names = F, quote = F)
 
 ############################################################## run regression
 
@@ -476,31 +444,8 @@ for (x in 1:length(variable)) {
   
 }
 
-# ## table
-# 
-# variable_all <- c("region_mean_temp","hours_since_last_ate","age","is_female","region_is_urban",
-#                   "smoking_ever_regular","alcohol_regular_vs_occasion",variable)
-# 
-# for (i in 1:length(variable_all)) {
-#   overlap_assoc$olink_sig <-F
-#   overlap_assoc$olink_sig[overlap_assoc[10+i*6]<0.05] <- T
-#   
-#   overlap_assoc$soma_normal_sig <- F
-#   overlap_assoc$soma_normal_sig[overlap_assoc[12+i*6]<0.05] <- T
-#   
-#   overlap_assoc$soma_non_normal_sig <- F
-#   overlap_assoc$soma_non_normal_sig[overlap_assoc[14+i*6]<0.05] <- T
-#   
-#   names(overlap_assoc)[(ncol(overlap_assoc)-2):ncol(overlap_assoc)] <- 
-#     paste(names(overlap_assoc)[(ncol(overlap_assoc)-2):ncol(overlap_assoc)],variable_all[i],sep="_")
-# }
 
 write.csv(overlap_assoc, "overlap_assoc.csv", row.names = F, quote = F)
-
-# overlap_assoc <- read.csv("overlap_assoc.csv")
-# overlap_assoc_bmi <- cbind(overlap_assoc[,c("uniprot_id","olink_id","somascan_id")],overlap_assoc[,grep("bmi",names(overlap_assoc))])
-
-# overlap_assoc <- test <- overlap_assoc[,-grep("_sig_",names(overlap_assoc))]
 
 # keep 1 to 1
 
@@ -509,11 +454,6 @@ protein_dup <- unique(overlap_assoc$uniprot_id[duplicated(overlap_assoc$uniprot_
 aptamer_dup <- unique(overlap_assoc$somascan_id[duplicated(overlap_assoc$somascan_id)]) # get aptamers targeted by multiple proteins
 
 overlap_1_to_1_assoc <- overlap_assoc[-c(which(overlap_assoc$uniprot_id %in% protein_dup),which(overlap_assoc$somascan_id %in% aptamer_dup)), ]
-
-# count
-
-# names(overlap_1_to_1_assoc)
-# colSums(overlap_1_to_1_assoc[123:176], na.rm = TRUE)
 
 # save
 

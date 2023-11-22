@@ -1,6 +1,6 @@
 rm(list = ls())
 
-setwd("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data")
+setwd("")
 
 library(UniProt.ws)
 library(ckbplotr)
@@ -202,32 +202,11 @@ boruta_non_normal_regress
 
 setdiff(unique(boruta_normal_melt_confirmed$variable),variable)
 
-# variable_extra <- c("lipidation")
-# 
-# boruta_non_normal_extra <- data.frame(variable=variable_extra,
-#                                   coeff=numeric(1),
-#                                   p=numeric(1),
-#                                   direction="Rejected")
-
-# boruta_non_normal_regress <- rbind(boruta_non_normal_regress,boruta_non_normal_extra)
-
 boruta_non_normal_melt_confirmed <- merge(boruta_non_normal_melt,boruta_non_normal_regress,by="variable",all.y=T)
 
 # plot
 
 xlevel_non_normal <- str_replace(xlevel, "normal", "non_normal")
-
-# boruta_non_normal_plot_confirmed <- ggplot(boruta_non_normal_melt_confirmed, aes(x=reorder(variable, importance, FUN = median), y=importance)) + 
-#   geom_boxplot(aes(fill=factor(direction,levels=c("Positive","Inverse","Rejected"))),lwd=0.2,outlier.size=0.2) + 
-#   coord_flip() +
-#   ylim(-5,45) +
-#   ggtitle("Boruta feature selection (non-ANML)") +
-#   ylab("Importance") +
-#   labs(fill="Direction of association") +
-#   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
-#   theme(text = element_text(size = 12))
-# 
-# boruta_non_normal_plot_confirmed
 
 boruta_non_normal_plot_confirmed <- ggplot(boruta_non_normal_melt_confirmed, aes(x=factor(variable, levels=xlevel_non_normal), y=importance)) + 
   geom_boxplot(aes(fill=factor(direction,levels=c("Positive","Inverse","Rejected"))),lwd=0.2,outlier.size=0.2) + 
@@ -253,10 +232,6 @@ legend <- as_ggplot(get_legend( ggplot(boruta_normal_melt_confirmed, aes(x=facto
                                   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
                                   scale_fill_manual(values=c(hex,"#808080"),labels=c("Positive","Inverse","Rejected"))))
 
-# boruta_plot_confirmed <- ggarrange(boruta_normal_plot_confirmed,boruta_non_normal_plot_confirmed,legend,ncol=3,nrow=1)
-
-# boruta_plot_confirmed <- grid.arrange(boruta_normal_plot_confirmed,boruta_non_normal_plot_confirmed,legend,widths=c(3,3,1))
-
 g1 <- ggplotGrob(boruta_normal_plot_confirmed)
 g2 <- ggplotGrob(boruta_non_normal_plot_confirmed)
 g3 <- ggplotGrob(legend)
@@ -276,13 +251,4 @@ grid.newpage()
 combined <- gtable_cbind(fg12, fg3)
 grid.draw(combined)
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/boruta_plot_confirmed.png",combined,width=14,height=6)
-
-# combine with histogram
-
-# load("plot_rho_olink_soma.RData")
-
-# figure2 <- ggarrange(plot_rho_olink_soma_normal,plot_rho_olink_soma_non_normal,boruta_normal_plot_confirmed,boruta_non_normal_plot_confirmed,
-#                      ncol=2,nrow=2)
-# 
-# ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/figure2.png",figure2,width=16,height=9)
+ggsave("boruta_plot_confirmed.png",combined,width=14,height=6)

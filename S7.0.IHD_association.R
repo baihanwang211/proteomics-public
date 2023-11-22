@@ -1,6 +1,6 @@
 rm(list = ls())
 
-setwd("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data")
+setwd("")
 
 library(ggplot2)
 library(ggpubr)
@@ -16,12 +16,12 @@ library(RColorBrewer)
 library(readxl)
 
 # load results
-olink_1 <- read.csv("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/OLINK_B1_ihd.csv")
-olink_2 <- read.csv("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/OLINK_B2_ihd.csv")
+olink_1 <- read.csv("OLINK_B1_ihd.csv")
+olink_2 <- read.csv("OLINK_B2_ihd.csv")
 olink <- rbind(olink_1,olink_2)
 
-soma_normal <- read_excel("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/SomaScan_ihd.xlsx",sheet = "Log transformed")
-soma_non_normal <- read_excel("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/SomaScan_ihd.xlsx",sheet = "Log transformed, No ANML")
+soma_normal <- read_excel("SomaScan_ihd.xlsx",sheet = "Log transformed")
+soma_non_normal <- read_excel("SomaScan_ihd.xlsx",sheet = "Log transformed, No ANML")
 
 # edit columns
 names(olink)
@@ -62,7 +62,7 @@ overlap_ihd <- merge(overlap_ihd,soma_normal,by="somascan_id")
 overlap_ihd <- merge(overlap_ihd,soma_non_normal,by="somascan_id")
 
 # load overlapping list
-overlap_1_to_1_cor <- read.csv("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/overlap_1_to_1_cor.csv")
+overlap_1_to_1_cor <- read.csv("overlap_1_to_1_cor.csv")
 overlap_1_to_1_cor$olink_id <- gsub("_",".",overlap_1_to_1_cor$olink_id)
 
 # merge
@@ -79,56 +79,56 @@ overlap_1_to_1_ihd$olink_p_fdr <- p.adjust(overlap_1_to_1_ihd$olink_p,method="fd
 overlap_1_to_1_ihd$soma_normal_p_fdr <- p.adjust(overlap_1_to_1_ihd$soma_normal_p,method="fdr")
 overlap_1_to_1_ihd$soma_non_normal_p_fdr <- p.adjust(overlap_1_to_1_ihd$soma_non_normal_p,method="fdr")
 
-write.csv(overlap_1_to_1_ihd,"K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/overlap_1_to_1_ihd.csv", quote=F, row.names=F)
+write.csv(overlap_1_to_1_ihd,"overlap_1_to_1_ihd.csv", quote=F, row.names=F)
 
-# overlap_1_to_1_ihd <- read.csv("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/overlap_1_to_1_ihd.csv")
+# overlap_1_to_1_ihd <- read.csv("overlap_1_to_1_ihd.csv")
 
 ihd_all_overlap <- overlap_1_to_1_ihd[,c(1:3)]
-write.csv(ihd_all_overlap,"K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/ihd_all_overlap.csv", quote=F, row.names=F)
+write.csv(ihd_all_overlap,"ihd_all_overlap.csv", quote=F, row.names=F)
 
 ihd_olink_sig <- overlap_1_to_1_ihd[overlap_1_to_1_ihd$olink_p_bonferroni<0.05,c(1:3)]
-write.csv(ihd_olink_sig,"K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/ihd_olink_sig_bonferroni.csv", quote=F, row.names=F)
+write.csv(ihd_olink_sig,"ihd_olink_sig_bonferroni.csv", quote=F, row.names=F)
 
 ihd_soma_normal_sig <- overlap_1_to_1_ihd[overlap_1_to_1_ihd$soma_normal_p_bonferroni<0.05,c(1:3)]
-write.csv(ihd_soma_normal_sig,"K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/ihd_soma_normal_sig_bonferroni.csv", quote=F, row.names=F)
+write.csv(ihd_soma_normal_sig,"ihd_soma_normal_sig_bonferroni.csv", quote=F, row.names=F)
 
 ihd_soma_non_normal_sig <- overlap_1_to_1_ihd[overlap_1_to_1_ihd$soma_non_normal_p_bonferroni<0.05,c(1:3)]
-write.csv(ihd_soma_non_normal_sig,"K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/ihd_soma_non_normal_sig_bonferroni.csv", quote=F, row.names=F)
+write.csv(ihd_soma_non_normal_sig,"ihd_soma_non_normal_sig_bonferroni.csv", quote=F, row.names=F)
 
 ihd_olink_soma_normal_shared <- overlap_1_to_1_ihd[overlap_1_to_1_ihd$olink_p_bonferroni<0.05 & 
                                                  overlap_1_to_1_ihd$soma_normal_p_bonferroni<0.05 &
                                                  sign(overlap_1_to_1_ihd$olink_coef)==sign(overlap_1_to_1_ihd$soma_normal_coef),
                                                  c(1:3)]
-write.csv(ihd_olink_soma_normal_shared,"K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/ihd_olink_soma_normal_shared_bonferroni.csv", quote=F, row.names=F)
+write.csv(ihd_olink_soma_normal_shared,"ihd_olink_soma_normal_shared_bonferroni.csv", quote=F, row.names=F)
 
 ihd_olink_soma_non_normal_shared <- overlap_1_to_1_ihd[overlap_1_to_1_ihd$olink_p_bonferroni<0.05 & 
                                                  overlap_1_to_1_ihd$soma_non_normal_p_bonferroni<0.05 &
                                                  sign(overlap_1_to_1_ihd$olink_coef)==sign(overlap_1_to_1_ihd$soma_non_normal_coef),
                                                c(1:3)]
-write.csv(ihd_olink_soma_non_normal_shared,"K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/ihd_olink_soma_non_normal_shared_bonferroni.csv", quote=F, row.names=F)
+write.csv(ihd_olink_soma_non_normal_shared,"ihd_olink_soma_non_normal_shared_bonferroni.csv", quote=F, row.names=F)
 
 
 
 ihd_olink_sig <- overlap_1_to_1_ihd[overlap_1_to_1_ihd$olink_p_fdr<0.05,c(1:3)]
-write.csv(ihd_olink_sig,"K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/ihd_olink_sig_fdr.csv", quote=F, row.names=F)
+write.csv(ihd_olink_sig,"ihd_olink_sig_fdr.csv", quote=F, row.names=F)
 
 ihd_soma_normal_sig <- overlap_1_to_1_ihd[overlap_1_to_1_ihd$soma_normal_p_fdr<0.05,c(1:3)]
-write.csv(ihd_soma_normal_sig,"K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/ihd_soma_normal_sig_fdr.csv", quote=F, row.names=F)
+write.csv(ihd_soma_normal_sig,"ihd_soma_normal_sig_fdr.csv", quote=F, row.names=F)
 
 ihd_soma_non_normal_sig <- overlap_1_to_1_ihd[overlap_1_to_1_ihd$soma_non_normal_p_fdr<0.05,c(1:3)]
-write.csv(ihd_soma_non_normal_sig,"K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/ihd_soma_non_normal_sig_fdr.csv", quote=F, row.names=F)
+write.csv(ihd_soma_non_normal_sig,"ihd_soma_non_normal_sig_fdr.csv", quote=F, row.names=F)
 
 ihd_olink_soma_normal_shared <- overlap_1_to_1_ihd[overlap_1_to_1_ihd$olink_p_fdr<0.05 & 
                                                      overlap_1_to_1_ihd$soma_normal_p_fdr<0.05 &
                                                      sign(overlap_1_to_1_ihd$olink_coef)==sign(overlap_1_to_1_ihd$soma_normal_coef),
                                                    c(1:3)]
-write.csv(ihd_olink_soma_normal_shared,"K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/ihd_olink_soma_normal_shared_fdr.csv", quote=F, row.names=F)
+write.csv(ihd_olink_soma_normal_shared,"ihd_olink_soma_normal_shared_fdr.csv", quote=F, row.names=F)
 
 ihd_olink_soma_non_normal_shared <- overlap_1_to_1_ihd[overlap_1_to_1_ihd$olink_p_fdr<0.05 & 
                                                          overlap_1_to_1_ihd$soma_non_normal_p_fdr<0.05 &
                                                          sign(overlap_1_to_1_ihd$olink_coef)==sign(overlap_1_to_1_ihd$soma_non_normal_coef),
                                                        c(1:3)]
-write.csv(ihd_olink_soma_non_normal_shared,"K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/ihd_olink_soma_non_normal_shared_fdr.csv", quote=F, row.names=F)
+write.csv(ihd_olink_soma_non_normal_shared,"ihd_olink_soma_non_normal_shared_fdr.csv", quote=F, row.names=F)
 
 
 
@@ -193,8 +193,6 @@ volcano_olink <- ggplot(overlap_1_to_1_ihd, aes(x=olink_coef, y=-log(olink_p,10)
   labs(color='Association') +
   scale_color_manual(values=c(hex[1],"gray")) +
   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
-  # geom_segment(aes(x=olink_x_loc, y=150, xend=olink_x_loc, yend=155), 
-  #              arrow = arrow(length=unit(2, 'pt')), color=hex[1],lwd=1) +
   geom_text_repel(data = top,
                    mapping = aes(x=olink_coef, y=-log(olink_p,10), label=olink_id),
                    size = 2.5) +
@@ -225,8 +223,6 @@ volcano_soma_normal <- ggplot(overlap_1_to_1_ihd, aes(x=soma_normal_coef, y=-log
   labs(color='Association') +
   scale_color_manual(values=c(hex,"gray")) +
   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
-  # geom_segment(aes(x=soma_normal_x_loc, y=150, xend=soma_normal_x_loc, yend=155), 
-  #              arrow = arrow(length=unit(2, 'pt')), color=hex[1],lwd=1) +
   geom_text_repel(data = top,
                    mapping = aes(x=soma_normal_coef, y=-log(soma_normal_p,10), label=olink_id),
                    size = 2.5) +
@@ -257,8 +253,6 @@ volcano_soma_non_normal <- ggplot(overlap_1_to_1_ihd, aes(x=soma_non_normal_coef
   labs(color='Association') +
   scale_color_manual(values=c(hex,"gray")) +
   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
-  # geom_segment(aes(x=soma_non_normal_x_loc, y=150, xend=soma_non_normal_x_loc, yend=155), 
-  #              arrow = arrow(length=unit(2, 'pt')), color=hex[1],lwd=1) +
   geom_text_repel(data = top,
                    mapping = aes(x=soma_non_normal_coef, y=-log(soma_non_normal_p,10), label=olink_id),
                    size = 2.5) +
@@ -269,7 +263,7 @@ volcano_soma_non_normal
 
 volcano_combined <- ggarrange(volcano_olink,volcano_soma_normal,volcano_soma_non_normal,ncol=3,nrow=1)
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/ihd_volcano_plot_bonferroni.png",volcano_combined,width=14,height=6)
+ggsave("ihd_volcano_plot_bonferroni.png",volcano_combined,width=14,height=6)
 
 
 
@@ -303,7 +297,7 @@ venn_ihd_normal[[7]]$label <- paste(venn_ihd_normal[[7]]$label, "\n(", c4, " sha
 grid.newpage()
 grid.draw(venn_ihd_normal)
 
-png("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_ihd_normal_bonferroni.png",width = 1600, height = 1600, pointsize=70)
+png("venn_diagram_ihd_normal_bonferroni.png",width = 1600, height = 1600, pointsize=70)
 grid.draw(venn_ihd_normal)
 dev.off()
 
@@ -359,7 +353,7 @@ scatter_normal <- ggplot(overlap_1_to_1_ihd, aes(x=olink_coef, y=soma_normal_coe
 
 scatter_normal
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/ihd_scatter_plot_normal_bonferroni.png",scatter_normal,width=6,height=6,bg = "white")
+ggsave("ihd_scatter_plot_normal_bonferroni.png",scatter_normal,width=6,height=6,bg = "white")
 
 
 
@@ -390,7 +384,7 @@ venn_ihd_non_normal[[7]]$label <- paste(venn_ihd_non_normal[[7]]$label, "\n(", c
 grid.newpage()
 grid.draw(venn_ihd_non_normal)
 
-png("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_ihd_non_normal_bonferroni.png",width = 1600, height = 1600, pointsize=70)
+png("venn_diagram_ihd_non_normal_bonferroni.png",width = 1600, height = 1600, pointsize=70)
 grid.draw(venn_ihd_non_normal)
 dev.off()
 
@@ -440,7 +434,7 @@ scatter_non_normal <- ggplot(overlap_1_to_1_ihd, aes(x=olink_coef, y=soma_non_no
 
 scatter_non_normal
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/ihd_scatter_non_normal_bonferroni.png",scatter_non_normal,width=6,height=6,bg = "white")
+ggsave("ihd_scatter_non_normal_bonferroni.png",scatter_non_normal,width=6,height=6,bg = "white")
 
 
 
@@ -473,7 +467,7 @@ venn_ihd_soma[[7]]$label <- paste(venn_ihd_soma[[7]]$label, "\n(", c4, " shared)
 grid.newpage()
 grid.draw(venn_ihd_soma)
 
-png("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_ihd_soma_bonferroni.png",width = 1600, height = 1600, pointsize=70)
+png("venn_diagram_ihd_soma_bonferroni.png",width = 1600, height = 1600, pointsize=70)
 grid.draw(venn_ihd_soma)
 dev.off()
 
@@ -519,7 +513,7 @@ scatter_soma <- ggplot(overlap_1_to_1_ihd, aes(x=soma_normal_coef, y=soma_non_no
 
 scatter_soma
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/ihd_scatter_soma_bonferroni.png",scatter_soma,width=6,height=6,bg = "white")
+ggsave("ihd_scatter_soma_bonferroni.png",scatter_soma,width=6,height=6,bg = "white")
 
 
 
@@ -590,7 +584,7 @@ hist_ihd <- grid.arrange(hist_ihd_normal,hist_ihd_non_normal,legend,widths=c(3,3
 #                              hist_ihd_neither_normal,hist_ihd_neither_non_normal,
 #                              leg,layout_matrix = lay, widths=c(3,3,1))
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/hist_ihd_bonferroni.png",hist_ihd,width=14,height=6,bg = "white")
+ggsave("hist_ihd_bonferroni.png",hist_ihd,width=14,height=6,bg = "white")
 
 
 
@@ -656,7 +650,7 @@ hist_ihd_shared_non_normal
 
 hist_ihd_shared <- ggarrange(hist_ihd_shared_normal,hist_ihd_shared_non_normal,ncol=2,nrow=1)
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/hist_ihd_shared_bonferroni.png",hist_ihd_shared,width=14,height=6,bg = "white")
+ggsave("hist_ihd_shared_bonferroni.png",hist_ihd_shared,width=14,height=6,bg = "white")
 
 
 
@@ -719,8 +713,6 @@ volcano_olink <- ggplot(overlap_1_to_1_ihd, aes(x=olink_coef, y=-log(olink_p,10)
   labs(color='Association') +
   scale_color_manual(values=c(hex,"gray")) +
   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
-  # geom_segment(aes(x=olink_x_loc, y=150, xend=olink_x_loc, yend=155), 
-  #              arrow = arrow(length=unit(2, 'pt')), color=hex[1],lwd=1) +
   geom_text_repel(data = top,
                   mapping = aes(x=olink_coef, y=-log(olink_p,10), label=olink_id),
                   size = 2.5) +
@@ -751,8 +743,6 @@ volcano_soma_normal <- ggplot(overlap_1_to_1_ihd, aes(x=soma_normal_coef, y=-log
   labs(color='Association') +
   scale_color_manual(values=c(hex,"gray")) +
   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
-  # geom_segment(aes(x=soma_normal_x_loc, y=150, xend=soma_normal_x_loc, yend=155), 
-  #              arrow = arrow(length=unit(2, 'pt')), color=hex[1],lwd=1) +
   geom_text_repel(data = top,
                   mapping = aes(x=soma_normal_coef, y=-log(soma_normal_p,10), label=olink_id),
                   size = 2.5) +
@@ -783,8 +773,6 @@ volcano_soma_non_normal <- ggplot(overlap_1_to_1_ihd, aes(x=soma_non_normal_coef
   labs(color='Association') +
   scale_color_manual(values=c(hex,"gray")) +
   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
-  # geom_segment(aes(x=soma_non_normal_x_loc, y=150, xend=soma_non_normal_x_loc, yend=155), 
-  #              arrow = arrow(length=unit(2, 'pt')), color=hex[1],lwd=1) +
   geom_text_repel(data = top,
                   mapping = aes(x=soma_non_normal_coef, y=-log(soma_non_normal_p,10), label=olink_id),
                   size = 2.5) +
@@ -795,7 +783,7 @@ volcano_soma_non_normal
 
 volcano_combined <- ggarrange(volcano_olink,volcano_soma_normal,volcano_soma_non_normal,ncol=3,nrow=1)
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/ihd_volcano_plot_fdr.png",volcano_combined,width=14,height=6)
+ggsave("ihd_volcano_plot_fdr.png",volcano_combined,width=14,height=6)
 
 
 
@@ -833,7 +821,7 @@ venn_ihd_normal[[7]]$label <- paste(venn_ihd_normal[[7]]$label, "\n(", c4, " sha
 grid.newpage()
 grid.draw(venn_ihd_normal)
 
-png("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_ihd_normal_fdr.png",width = 1600, height = 1600, pointsize=70)
+png("venn_diagram_ihd_normal_fdr.png",width = 1600, height = 1600, pointsize=70)
 grid.draw(venn_ihd_normal)
 dev.off()
 
@@ -889,7 +877,7 @@ scatter_normal <- ggplot(overlap_1_to_1_ihd, aes(x=olink_coef, y=soma_normal_coe
 
 scatter_normal
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/ihd_scatter_plot_normal_fdr.png",scatter_normal,width=6,height=6,bg = "white")
+ggsave("ihd_scatter_plot_normal_fdr.png",scatter_normal,width=6,height=6,bg = "white")
 
 
 
@@ -920,7 +908,7 @@ venn_ihd_non_normal[[7]]$label <- paste(venn_ihd_non_normal[[7]]$label, "\n(", c
 grid.newpage()
 grid.draw(venn_ihd_non_normal)
 
-png("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_ihd_non_normal_fdr.png",width = 1600, height = 1600, pointsize=70)
+png("venn_diagram_ihd_non_normal_fdr.png",width = 1600, height = 1600, pointsize=70)
 grid.draw(venn_ihd_non_normal)
 dev.off()
 
@@ -970,7 +958,7 @@ scatter_non_normal <- ggplot(overlap_1_to_1_ihd, aes(x=olink_coef, y=soma_non_no
 
 scatter_non_normal
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/ihd_scatter_non_normal_fdr.png",scatter_non_normal,width=6,height=6,bg = "white")
+ggsave("ihd_scatter_non_normal_fdr.png",scatter_non_normal,width=6,height=6,bg = "white")
 
 
 
@@ -1002,7 +990,7 @@ venn_ihd_soma[[7]]$label <- paste(venn_ihd_soma[[7]]$label, "\n(", c4, " shared)
 grid.newpage()
 grid.draw(venn_ihd_soma)
 
-png("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_ihd_soma_fdr.png",width = 1600, height = 1600, pointsize=70)
+png("venn_diagram_ihd_soma_fdr.png",width = 1600, height = 1600, pointsize=70)
 grid.draw(venn_ihd_soma)
 dev.off()
 
@@ -1048,7 +1036,7 @@ scatter_soma <- ggplot(overlap_1_to_1_ihd, aes(x=soma_normal_coef, y=soma_non_no
 
 scatter_soma
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/ihd_scatter_soma_fdr.png",scatter_soma,width=6,height=6,bg = "white")
+ggsave("ihd_scatter_soma_fdr.png",scatter_soma,width=6,height=6,bg = "white")
 
 
 
@@ -1119,7 +1107,7 @@ hist_ihd <- grid.arrange(hist_ihd_normal,hist_ihd_non_normal,legend,widths=c(3,3
 #                              hist_ihd_neither_normal,hist_ihd_neither_non_normal,
 #                              leg,layout_matrix = lay, widths=c(3,3,1))
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/hist_ihd_fdr.png",hist_ihd,width=14,height=6,bg = "white")
+ggsave("hist_ihd_fdr.png",hist_ihd,width=14,height=6,bg = "white")
 
 
 
@@ -1185,5 +1173,5 @@ hist_ihd_shared_non_normal
 
 hist_ihd_shared <- ggarrange(hist_ihd_shared_normal,hist_ihd_shared_non_normal,ncol=2,nrow=1)
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/hist_ihd_shared_fdr.png",hist_ihd_shared,width=14,height=6,bg = "white")
+ggsave("hist_ihd_shared_fdr.png",hist_ihd_shared,width=14,height=6,bg = "white")
 

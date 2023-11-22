@@ -1,6 +1,6 @@
 rm(list = ls())
 
-setwd("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data")
+setwd("")
 
 library(ggplot2)
 library(ggpubr)
@@ -76,48 +76,7 @@ scatter_p_soma <- ggplot(overlap_logp, aes(x=anmllogp, y=nanmllogp, color=cis_tr
 
 scatter_p <- ggarrange(scatter_p_anml,scatter_p_non_anml,scatter_p_soma,ncol=3,nrow=1)
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/pqtl_scatter_p.png",scatter_p,width=18,height=6,bg = "white")
-
-
-#### heritability
-
-# olink_h2 <- read.delim("olink_h2.txt")
-# names(olink_h2)[-1] <- paste('olink', names(olink_h2)[-1], sep = '_')
-# names(olink_h2) <- tolower(names(olink_h2))
-# names(olink_h2)[1] <- "olink_id"
-# overlap_h2 <- merge(overlap,olink_h2,by="olink_id",all.x=T)
-# 
-# soma_normal_h2 <- read.delim("soma_anml_h2.txt")
-# soma_normal_h2 <- soma_normal_h2[!is.na(soma_normal_h2$cis_trans),]
-# dup <- soma_normal_h2[duplicated(soma_normal_h2[,1]),1]
-# dup_eg <- soma_normal_h2[soma_normal_h2$Aptamer_ID %in% dup,]
-# 
-# soma_normal_h2 <- pivot_wider(soma_normal_h2,id_cols="Aptamer_ID",names_from="cis_trans",values_from = "h2")
-# soma_normal_h2[soma_normal_h2=="NULL"] <- 0
-# 
-# soma_normal_h2 <- replace(soma_normal_h2,.=="NULL",0)
-# 
-# names(soma_normal_h2)[-1] <- paste('soma_normal', names(soma_normal_h2)[-1], sep = '_')
-# names(soma_normal_h2) <- tolower(names(soma_normal_h2))
-# names(soma_normal_h2)[1] <- "somascan_id"
-# soma_normal_h2$soma_normal_total <- soma_normal_h2$soma_normal_trans + soma_normal_h2$soma_normal_cis
-# 
-# soma_non_normal_h2 <- read.delim("soma_nanml_h2.txt")
-# soma_non_normal_h2 <- soma_non_normal_h2[!is.na(soma_non_normal_h2$cis_trans),]
-# soma_non_normal_h2 <- pivot_wider(soma_non_normal_h2,id_cols="Aptamer_ID",names_from="cis_trans",values_from = "h2")
-# 
-# 
-# 
-# 
-# 
-# names(soma_normal_h2)[-1] <- paste('soma_normal', names(soma_normal_h2)[-1], sep = '_')
-# names(soma_normal_h2) <- tolower(names(soma_normal_h2))
-# names(soma_normal_h2)[1] <- "somascan_id"
-# overlap_h2 <- merge(overlap_h2,soma_normal_h2,by="somascan_id",all.x=T)
-# 
-# 
-# soma_non_normal_h2 <- read.delim("soma_nanml_h2.txt")
-
+ggsave("pqtl_scatter_p.png",scatter_p,width=18,height=6,bg = "white")
 
 
 
@@ -135,25 +94,7 @@ names(pqtl_non_normal) <- c("somascan_id","olink_cis","olink_trans","soma_non_no
 
 pqtl <- merge(pqtl_normal,pqtl_non_normal,by=c("somascan_id","olink_cis","olink_trans"))
 
-# pqtl <- read.delim("overlap_pqtls.txt")
-# names(pqtl)[1] <- "somascan_id"
-# pqtl <- pqtl[,-c(2,3)]
-# names(pqtl) <- c("somascan_id","olink_cis","olink_trans","soma_normal_cis","soma_normal_trans","soma_non_normal_cis","soma_non_normal_trans")
-
 overlap_pqtl <- merge(overlap,pqtl,by="somascan_id")
-
-# pqtl_normal <- read.delim("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/hit_count_anml.txt")
-# names(pqtl_normal)
-# pqtl_normal <- pqtl_normal[,c("soma","olink_cis","olink_trans","soma_cis","soma_trans")]
-# names(pqtl_normal) <- c("somascan_id","olink_cis","olink_trans","soma_normal_cis","soma_normal_trans")
-# 
-# pqtl_non_normal <- read.delim("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/hit_count_non_anml.txt")
-# names(pqtl_non_normal)
-# pqtl_non_normal <- pqtl_non_normal[,c("soma","soma_cis","soma_trans")]
-# names(pqtl_non_normal) <- c("somascan_id","soma_non_normal_cis","soma_non_normal_trans")
-# 
-# pqtl <- merge(pqtl_normal,pqtl_non_normal,by="somascan_id")
-# names(pqtl)
 
 ## count total number of pQTLs
 
@@ -192,26 +133,6 @@ pqtl_count_all$Frequency_shade[pqtl_count_all$cat=="original"] <- pqtl_count_all
 
 hex <- hue_pal()(3)
 
-# plot_pqtl_hit_all <- ggplot(pqtl_count_all,aes(y=Frequency, x=Platform, fill=Platform, pattern=cat)) +
-#   geom_bar_pattern(stat = "identity",
-#                    position = "stack",
-#                    colour = 'black',
-#                    pattern_fill = "black",
-#                    pattern_spacing = 0.015,
-#                    pattern_frequency = 5, 
-#                    pattern_angle = 45,
-#                    pattern_density=0.01) +
-#   facet_wrap( ~ pQTL) +
-#   scale_fill_manual(values = hex) +
-#   scale_pattern_manual(values=c("none","stripe")) +
-#   xlab("") +
-#   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
-#   theme(text = element_text(size = 10)) +
-#   theme(legend.position = "none") +
-#   theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1))
-# 
-# plot_pqtl_hit_all
-
 plot_pqtl_hit_all <- ggplot(pqtl_count_all,aes(y=Frequency, x=fct_rev(Platform), fill=fct_rev(Platform), pattern=cat)) +
   geom_bar_pattern(stat = "identity",
                    position = "stack",
@@ -235,123 +156,7 @@ plot_pqtl_hit_all <- ggplot(pqtl_count_all,aes(y=Frequency, x=fct_rev(Platform),
 
 plot_pqtl_hit_all
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_pqtl_hit_all.png",plot_pqtl_hit_all,width=9,height=6)
-
-
-
-# ## count pQTLs per protein
-# 
-# cols <- brewer.pal(3,"Set1")
-# 
-# # olink
-# 
-# overlap_pqtl$olink_all <- overlap_pqtl$olink_cis + overlap_pqtl$olink_trans
-# overlap_pqtl$olink_cat <- NA
-# overlap_pqtl$olink_cat[overlap_pqtl$olink_cis!=0 & overlap_pqtl$olink_trans==0] <- "cis"
-# overlap_pqtl$olink_cat[overlap_pqtl$olink_cis==0 & overlap_pqtl$olink_trans!=0] <- "trans"
-# overlap_pqtl$olink_cat[overlap_pqtl$olink_cis!=0 & overlap_pqtl$olink_trans!=0] <- "both"
-# overlap_pqtl$olink_cat[overlap_pqtl$olink_cis==0 & overlap_pqtl$olink_trans==0] <- "no pQTLs"
-# overlap_pqtl$olink_cat <- factor(overlap_pqtl$olink_cat,levels=c("cis","both","trans","no pQTLs"))
-# table(overlap_pqtl$olink_cat)
-# 
-# overlap_pqtl$soma_normal_all <- overlap_pqtl$soma_normal_cis + overlap_pqtl$soma_normal_trans
-# overlap_pqtl$soma_normal_cat <- NA
-# overlap_pqtl$soma_normal_cat[overlap_pqtl$soma_normal_cis!=0 & overlap_pqtl$soma_normal_trans==0] <- "cis"
-# overlap_pqtl$soma_normal_cat[overlap_pqtl$soma_normal_cis==0 & overlap_pqtl$soma_normal_trans!=0] <- "trans"
-# overlap_pqtl$soma_normal_cat[overlap_pqtl$soma_normal_cis!=0 & overlap_pqtl$soma_normal_trans!=0] <- "both"
-# overlap_pqtl$soma_normal_cat[overlap_pqtl$soma_normal_cis==0 & overlap_pqtl$soma_normal_trans==0] <- "no pQTLs"
-# overlap_pqtl$soma_normal_cat <- factor(overlap_pqtl$soma_normal_cat,levels=c("cis","both","trans","no pQTLs"))
-# table(overlap_pqtl$soma_normal_cat)
-# 
-# overlap_pqtl$soma_non_normal_all <- overlap_pqtl$soma_non_normal_cis + overlap_pqtl$soma_non_normal_trans
-# overlap_pqtl$soma_non_normal_cat <- NA
-# overlap_pqtl$soma_non_normal_cat[overlap_pqtl$soma_non_normal_cis!=0 & overlap_pqtl$soma_non_normal_trans==0] <- "cis"
-# overlap_pqtl$soma_non_normal_cat[overlap_pqtl$soma_non_normal_cis==0 & overlap_pqtl$soma_non_normal_trans!=0] <- "trans"
-# overlap_pqtl$soma_non_normal_cat[overlap_pqtl$soma_non_normal_cis!=0 & overlap_pqtl$soma_non_normal_trans!=0] <- "both"
-# overlap_pqtl$soma_non_normal_cat[overlap_pqtl$soma_non_normal_cis==0 & overlap_pqtl$soma_non_normal_trans==0] <- "no pQTLs"
-# overlap_pqtl$soma_non_normal_cat <- factor(overlap_pqtl$soma_non_normal_cat,levels=c("cis","both","trans","no pQTLs"))
-# table(overlap_pqtl$soma_non_normal_cat)
-# 
-# # olink
-# 
-# plot_pqtl_per_protein_olink <- ggplot(overlap_pqtl,aes(x=olink_all, fill=fct_rev(olink_cat))) +
-#   geom_bar(stat = "count", position = "stack") +
-#   ylim(0,800) +
-#   xlab("Total number of pQTLs per protein") +
-#   ylab("Number of proteins") + 
-#   ggtitle("OLINK", subtitle ="") +
-#   scale_fill_manual(values = c("gray",cols[c(2,3,1)])) +
-#   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
-#   theme(text = element_text(size = 12)) +
-#   theme(legend.position = "none")
-# 
-# # somascan anml
-# 
-# plot_pqtl_per_protein_soma_normal <- ggplot(overlap_pqtl,aes(x=soma_normal_all, fill=fct_rev(soma_normal_cat))) +
-#   geom_bar(stat = "count", position = "stack") +
-#   ylim(0,800) +
-#   xlab("Total number of pQTLs per protein") +
-#   ylab("Number of proteins") + 
-#   ggtitle("SomaScan-ANML", subtitle ="") +
-#   scale_fill_manual(values = c("gray",cols[c(2,3,1)])) +
-#   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
-#   theme(text = element_text(size = 12)) +
-#   theme(legend.position = "none")
-# 
-# # somascan non-anml
-# 
-# plot_pqtl_per_protein_soma_non_normal <- ggplot(overlap_pqtl,aes(x=soma_non_normal_all, fill=fct_rev(soma_non_normal_cat))) +
-#   geom_bar(stat = "count", position = "stack") +
-#   ylim(0,800) +
-#   xlab("Total number of pQTLs per protein") +
-#   ylab("Number of proteins") + 
-#   ggtitle("SomaScan-non-ANML", subtitle ="") +
-#   scale_fill_manual(name="",
-#                     values = c("gray",cols[c(2,3,1)]),
-#                     labels= c("no pQTLs","trans only", "both cis and trans", "cis only")) +
-#   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
-#   theme(text = element_text(size = 12)) 
-# 
-# plot_pqtl_per_protein <- ggarrange(plot_pqtl_per_protein_olink,plot_pqtl_per_protein_soma_normal,plot_pqtl_per_protein_soma_non_normal,ncol=3,nrow=1)
-# 
-# ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_pqtl_per_protein.png",plot_pqtl_per_protein,width=18,height=6,bg = "white")
-
-
-# hex <- hue_pal()(3)
-# 
-# plot_pqtl_hit <- ggplot(pqtl_count, aes(y=Frequency, x=pQTL, fill=Platform)) + 
-#   geom_bar(stat="identity",position="dodge",colour="black") +
-#   xlab("") +
-#   ylab("Number of pQTLs") +
-#   labs(fill = "Platform") +
-#   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
-#   theme(text = element_text(size = 10)) +
-#   theme(strip.placement = "outside") +
-#   scale_fill_manual(values=hex)
-# 
-# plot_pqtl_hit
-# 
-# ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_pqtl_hit.png",plot_pqtl_hit,width=7,height=6)
-
-# # Whether or not having a pQTL
-# 
-# hex <- hue_pal()(3)
-# 
-# plot_pqtl_tf_hit <- ggplot(pqtl_tf_count, aes(y=Frequency, x=pQTL, fill=Platform)) + 
-#   geom_bar(stat="identity",position="dodge",colour="black") +
-#   xlab("") +
-#   ylab("Number of protein targets with pQTL(s)") +
-#   labs(fill = "Platform") +
-#   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
-#   theme(text = element_text(size = 10)) +
-#   theme(strip.placement = "outside") +
-#   scale_fill_manual(values=hex)
-# 
-# plot_pqtl_tf_hit
-# 
-# ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_pqtl_tf_hit.png",plot_pqtl_tf_hit,width=7,height=6)
-
-
+ggsave("plot_pqtl_hit_all.png",plot_pqtl_hit_all,width=9,height=6)
 
 
 # load coloc results
@@ -376,8 +181,6 @@ overlap_coloc <- merge(overlap_coloc,coloc_soma,by="somascan_id",all.x=T)
 
 # venn diagrams
 
-# cols <- brewer.pal(n = 3, name = "Set1")[c(1,2)]
-
 # cis normal
 
 overlap_coloc$coloc_normal_cis[is.na(overlap_coloc$coloc_normal_cis)] <- 0
@@ -390,11 +193,9 @@ c5 <- as.numeric(sum(overlap_coloc$olink_cis>0 & overlap_coloc$soma_normal_cis==
 c6 <- as.numeric(sum(overlap_coloc$olink_cis==0 & overlap_coloc$soma_normal_cis>0 & overlap_coloc$coloc_normal_cis>0))
 c7 <- as.numeric(sum(overlap_coloc$olink_cis==0 & overlap_coloc$soma_normal_cis==0 & overlap_coloc$coloc_normal_cis>0))
 overlap_coloc$olink_id[overlap_coloc$olink_cis==0 & overlap_coloc$soma_normal_cis==0 & overlap_coloc$coloc_normal_cis>0]
-# overlap_coloc$somascan_id[overlap_coloc$olink_cis==0 & overlap_coloc$soma_normal_cis==0 & overlap_coloc$coloc_normal_cis>0]
 
 overlap_coloc$coloc_normal_cis_tf <- F
 overlap_coloc$coloc_normal_cis_tf[overlap_coloc$coloc_normal_cis!=0] <- T
-# overlap_coloc$coloc_normal_cis_tf[overlap_coloc$olink_cis==0 & overlap_coloc$soma_normal_cis==0 & overlap_coloc$coloc_normal_cis>0] <- F
 table(overlap_coloc$coloc_normal_cis_tf)
 
 venn_diagram_pqtl_olink_soma_normal <- venn.diagram(
@@ -424,7 +225,7 @@ venn_diagram_pqtl_olink_soma_normal[[7]]$label <- paste(venn_diagram_pqtl_olink_
 grid.newpage()
 grid.draw(venn_diagram_pqtl_olink_soma_normal)
 
-png("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_pqtl_olink_soma_normal.png",width = 1600, height = 1600, pointsize=45)
+png("venn_diagram_pqtl_olink_soma_normal.png",width = 1600, height = 1600, pointsize=45)
 grid.draw(venn_diagram_pqtl_olink_soma_normal)
 dev.off()
 
@@ -444,7 +245,6 @@ overlap_coloc$olink_id[overlap_coloc$olink_cis==0 & overlap_coloc$soma_non_norma
 
 overlap_coloc$coloc_non_normal_cis_tf <- F
 overlap_coloc$coloc_non_normal_cis_tf[overlap_coloc$coloc_non_normal_cis!=0] <- T
-# overlap_coloc$coloc_non_normal_cis_tf[overlap_coloc$olink_cis==0 & overlap_coloc$soma_non_normal_cis==0 & overlap_coloc$coloc_non_normal_cis>0] <- F
 table(overlap_coloc$coloc_non_normal_cis_tf)
 
 venn_diagram_pqtl_olink_soma_non_normal <- venn.diagram(
@@ -474,7 +274,7 @@ venn_diagram_pqtl_olink_soma_non_normal[[7]]$label <- paste(venn_diagram_pqtl_ol
 grid.newpage()
 grid.draw(venn_diagram_pqtl_olink_soma_non_normal)
 
-png("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_pqtl_olink_soma_non_normal.png",width = 1600, height = 1600, pointsize=45)
+png("venn_diagram_pqtl_olink_soma_non_normal.png",width = 1600, height = 1600, pointsize=45)
 grid.draw(venn_diagram_pqtl_olink_soma_non_normal)
 dev.off()
 
@@ -494,7 +294,6 @@ overlap_coloc$somascan_id[overlap_coloc$soma_normal_cis==0 & overlap_coloc$soma_
 
 overlap_coloc$coloc_soma_cis_tf <- F
 overlap_coloc$coloc_soma_cis_tf[overlap_coloc$coloc_soma_cis!=0] <- T
-# overlap_coloc$coloc_soma_cis_tf[overlap_coloc$soma_normal_cis==0 & overlap_coloc$soma_non_normal_cis==0 & overlap_coloc$coloc_soma_cis>0] <- F
 table(overlap_coloc$coloc_soma_cis_tf)
 
 venn_diagram_pqtl_soma <- venn.diagram(
@@ -526,27 +325,12 @@ venn_diagram_pqtl_soma[[9]]$label <- paste(venn_diagram_pqtl_soma[[9]]$label,
 grid.newpage()
 grid.draw(venn_diagram_pqtl_soma)
 
-png("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_pqtl_soma.png",width = 1600, height = 1600, pointsize=45)
+png("venn_diagram_pqtl_soma.png",width = 1600, height = 1600, pointsize=45)
 grid.draw(venn_diagram_pqtl_soma)
 dev.off()
 
 write.csv(overlap_coloc,"overlap_coloc.csv", quote=F, row.names=F)
 
-
-# trans and save
-
-# overlap_coloc$coloc_normal_trans[is.na(overlap_coloc$coloc_normal_trans)] <- 0
-# overlap_coloc$coloc_normal_trans_tf <- F
-# overlap_coloc$coloc_normal_trans_tf[overlap_coloc$coloc_normal_trans!=0] <- T
-# table(overlap_coloc$coloc_normal_trans_tf)
-# 
-# overlap_coloc$coloc_non_normal_trans[is.na(overlap_coloc$coloc_non_normal_trans)] <- 0
-# overlap_coloc$coloc_non_normal_trans_tf <- F
-# overlap_coloc$coloc_non_normal_trans_tf[overlap_coloc$coloc_non_normal_trans!=0] <- T
-# table(overlap_coloc$coloc_non_normal_trans_tf)
-
-# write.csv(overlap_coloc,"overlap_coloc.csv", quote=F, row.names=F)
-# overlap_coloc <- read.csv("overlap_coloc.csv")
 
 
 # histogram
@@ -614,6 +398,6 @@ hist_pqtl_non_normal
 
 hist_pqtl <- ggarrange(hist_pqtl_normal,hist_pqtl_non_normal,ncol=2,nrow=1)
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/hist_pqtl.png",hist_pqtl,width=14,height=6)
+ggsave("hist_pqtl.png",hist_pqtl,width=14,height=6)
 
 write.csv(overlap_coloc,"overlap_coloc.csv", quote=F, row.names=F)

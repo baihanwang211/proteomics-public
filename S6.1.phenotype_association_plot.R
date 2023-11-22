@@ -1,6 +1,6 @@
 rm(list = ls())
 
-setwd("K:/kadoorie/Staff_Folders/BaihanW/proteomics/data")
+setwd("")
 
 library(ggplot2)
 library(ggpubr)
@@ -64,12 +64,6 @@ for (i in 1:length(variable)) {
     paste(names(overlap_1_to_1_assoc)[(ncol(overlap_1_to_1_assoc)-5):ncol(overlap_1_to_1_assoc)],variable[i],sep="_")
 }
 
-# ## count uncorrected
-# 
-# n_hit <- data.frame(colSums(overlap_1_to_1_assoc[grep("sig_raw",names(overlap_1_to_1_assoc))]))
-# n_hit$variable <- row.names(n_hit)
-# names(n_hit)[1] <- "n"
-# 
 # put them into a table
 
 label <- c("Ambient temperature", "Hours since last meal", "Age", "Female", "Urban area",
@@ -135,7 +129,7 @@ plot_n_hit_bonferroni <- ggplot(n_hit_bonferroni, aes(y=n, x=fct_rev(label), fil
 
 plot_n_hit_bonferroni
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_n_hit_bonferroni.png",plot_n_hit_bonferroni,width=9,height=9)
+ggsave("plot_n_hit_bonferroni.png",plot_n_hit_bonferroni,width=9,height=9)
 
 
 
@@ -229,7 +223,7 @@ plot_hit_concordance_bonferroni <- ggplot(trans_bonferroni, aes(y=percentage, x=
   facet_grid(cat~soma,scales = "free_y",space = "free",switch = "y") +
   scale_fill_manual(values=c("gray80",hex[c(1,5,7,9)]))
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_hit_concordance_bonferroni.png",plot_hit_concordance_bonferroni,width=9,height=6)
+ggsave("plot_hit_concordance_bonferroni.png",plot_hit_concordance_bonferroni,width=9,height=6)
 
 
 ## whether hits are shared between ANML and non-ANML (bonferroni)
@@ -286,7 +280,7 @@ plot_hit_concordance_soma_bonferroni <- ggplot(trans_soma_bonferroni, aes(y=perc
   facet_grid(cat~.,scales = "free_y",space = "free",switch = "y") +
   scale_fill_manual(values=c("gray80",hex[c(1,5,7,9)]))
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_hit_concordance_soma_bonferroni.png",plot_hit_concordance_soma_bonferroni,width=6,height=6)
+ggsave("plot_hit_concordance_soma_bonferroni.png",plot_hit_concordance_soma_bonferroni,width=6,height=6)
 
 
 
@@ -585,7 +579,7 @@ plot_cor_es <- ggplot(datatoplot, aes(y=-row, x=estimate_transformed)) +
 
 plot_cor_es_bg <- plot_cor_es + theme(plot.background = element_rect(fill = "white", colour = NA))
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_cor_es_bonferroni.png",plot_cor_es_bg,width=14,height=6)
+ggsave("plot_cor_es_bonferroni.png",plot_cor_es_bg,width=14,height=6)
 
 plot_cor_es_soma <- forest_plot(panels = list(cor_es_soma),
                            exponentiate = F,
@@ -609,7 +603,7 @@ plot_cor_es_soma <- forest_plot(panels = list(cor_es_soma),
 
 plot_cor_es_soma_bg <- plot_cor_es_soma$plot + theme(plot.background = element_rect(fill = "white", colour = NA))
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_cor_es_soma_bonferroni.png",plot_cor_es_soma_bg,width=7,height=6)
+ggsave("plot_cor_es_soma_bonferroni.png",plot_cor_es_soma_bg,width=7,height=6)
 
 
 
@@ -702,7 +696,7 @@ plot_cor_es_sig <- forest_plot(panels = cor_es_sig,
 
 plot_cor_es_sig_bg <- plot_cor_es_sig$plot + theme(plot.background = element_rect(fill = "white", colour = NA))
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_cor_es_sig_bonferroni.png",plot_cor_es_sig_bg,width=14,height=6)
+ggsave("plot_cor_es_sig_bonferroni.png",plot_cor_es_sig_bg,width=14,height=6)
 
 plot_cor_es_soma_sig <- forest_plot(panels = list(cor_es_soma_sig),
                                 exponentiate = F,
@@ -726,7 +720,7 @@ plot_cor_es_soma_sig <- forest_plot(panels = list(cor_es_soma_sig),
 
 plot_cor_es_soma_sig_bg <- plot_cor_es_soma_sig$plot + theme(plot.background = element_rect(fill = "white", colour = NA))
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_cor_es_soma_sig_bonferroni.png",plot_cor_es_soma_sig_bg,width=7,height=6)
+ggsave("plot_cor_es_soma_sig_bonferroni.png",plot_cor_es_soma_sig_bg,width=7,height=6)
 
 
 # write.csv(overlap_1_to_1_assoc,"overlap_1_to_1_assoc_sig.csv", quote=F, row.names=F)
@@ -812,7 +806,7 @@ plot_n_hit_fdr <- ggplot(n_hit_fdr, aes(y=n, x=fct_rev(label), fill=fct_rev(plat
 
 plot_n_hit_fdr
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_n_hit_fdr.png",plot_n_hit_fdr,width=9,height=9)
+ggsave("plot_n_hit_fdr.png",plot_n_hit_fdr,width=9,height=9)
 
 
 
@@ -905,7 +899,7 @@ plot_hit_concordance_fdr <- ggplot(trans_fdr, aes(y=percentage, x=fct_rev(label)
   facet_grid(cat~soma,scales = "free_y",space = "free",switch = "y") +
   scale_fill_manual(values=c("gray80",hex[c(1,5,7,9)]))
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_hit_concordance_fdr.png",plot_hit_concordance_fdr,width=9,height=6)
+ggsave("plot_hit_concordance_fdr.png",plot_hit_concordance_fdr,width=9,height=6)
 
 
 ## whether hits are shared between ANML and non-ANML (fdr)
@@ -962,7 +956,7 @@ plot_hit_concordance_soma_fdr <- ggplot(trans_soma_fdr, aes(y=percentage, x=fct_
   facet_grid(cat~.,scales = "free_y",space = "free",switch = "y") +
   scale_fill_manual(values=c("gray80",hex[c(1,5,7,9)]))
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_hit_concordance_soma_fdr.png",plot_hit_concordance_soma_fdr,width=6,height=6)
+ggsave("plot_hit_concordance_soma_fdr.png",plot_hit_concordance_soma_fdr,width=6,height=6)
 
 
 
@@ -1261,7 +1255,7 @@ plot_cor_es <- ggplot(datatoplot, aes(y=-row, x=estimate_transformed)) +
 
 plot_cor_es_bg <- plot_cor_es + theme(plot.background = element_rect(fill = "white", colour = NA))
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_cor_es_fdr.png",plot_cor_es_bg,width=14,height=6)
+ggsave("plot_cor_es_fdr.png",plot_cor_es_bg,width=14,height=6)
 
 plot_cor_es_soma <- forest_plot(panels = list(cor_es_soma),
                                 exponentiate = F,
@@ -1285,7 +1279,7 @@ plot_cor_es_soma <- forest_plot(panels = list(cor_es_soma),
 
 plot_cor_es_soma_bg <- plot_cor_es_soma$plot + theme(plot.background = element_rect(fill = "white", colour = NA))
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_cor_es_soma_fdr.png",plot_cor_es_soma_bg,width=7,height=6)
+ggsave("plot_cor_es_soma_fdr.png",plot_cor_es_soma_bg,width=7,height=6)
 
 ## correlation coefficient between beta, only for shared associations
 
@@ -1376,7 +1370,7 @@ plot_cor_es_sig <- forest_plot(panels = cor_es_sig,
 
 plot_cor_es_sig_bg <- plot_cor_es_sig$plot + theme(plot.background = element_rect(fill = "white", colour = NA))
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_cor_es_sig_fdr.png",plot_cor_es_sig_bg,width=14,height=6)
+ggsave("plot_cor_es_sig_fdr.png",plot_cor_es_sig_bg,width=14,height=6)
 
 plot_cor_es_soma_sig <- forest_plot(panels = list(cor_es_soma_sig),
                                     exponentiate = F,
@@ -1400,7 +1394,5 @@ plot_cor_es_soma_sig <- forest_plot(panels = list(cor_es_soma_sig),
 
 plot_cor_es_soma_sig_bg <- plot_cor_es_soma_sig$plot + theme(plot.background = element_rect(fill = "white", colour = NA))
 
-ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/plot_cor_es_soma_sig_fdr.png",plot_cor_es_soma_sig_bg,width=7,height=6)
+ggsave("plot_cor_es_soma_sig_fdr.png",plot_cor_es_soma_sig_bg,width=7,height=6)
 
-
-# write.csv(overlap_1_to_1_assoc,"overlap_1_to_1_assoc_sig.csv", quote=F, row.names=F)
