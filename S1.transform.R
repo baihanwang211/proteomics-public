@@ -1,3 +1,5 @@
+### This script loads the raw Olink and SomaScan data and transform them into the formats we need
+
 rm(list = ls())
 
 setwd("")

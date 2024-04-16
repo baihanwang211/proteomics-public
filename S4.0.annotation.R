@@ -1,3 +1,5 @@
+### this script annotates proteins based on their UniProt IDs
+
 rm(list = ls())
 
 setwd("")
@@ -122,7 +124,7 @@ overlap_cor <- merge(overlap_cor,kurtosis_soma_non_normal,by="somascan_id")
 
 ## calculate percentage below LOD and QC/assay warnings for olink
 
-olink_all <- read.csv("data_baseline_olink_explore.csv")
+olink_all <- read.csv("")
 olink_unique <- olink_all[!duplicated(olink_all[c("csid","assay")]),]
 olink_unique$below_lod <- F
 olink_unique$below_lod[olink_unique$npx < olink_unique$lod] <- T
@@ -160,7 +162,7 @@ hist(overlap_cor$assay_warning_olink)
 
 # QC check for soma
 
-somascan_qc <- read.csv("somalogic_meta.csv")[,c("aptname","col_check")]
+somascan_qc <- read.csv("")[,c("aptname","col_check")]
 names(somascan_qc) <- c("somascan_id","qc_check_soma")
 overlap_cor <- merge(overlap_cor, somascan_qc, by = "somascan_id")
 
@@ -179,7 +181,7 @@ for (i in 1:nrow(overlap_cor)) {
 
 # lod
 
-soma_extra <- read.csv("somascan_extra_info.csv")
+soma_extra <- read.csv("")
 soma_extra$SeqId <- gsub("-",".",soma_extra$SeqId)
 soma_extra$SeqId <- paste0("seq.",soma_extra$SeqId)
 soma_lod <-soma_extra[,c("SeqId","LoDB..RFU.")]
@@ -193,6 +195,9 @@ for (i in 1:nrow(overlap_cor)) {
   overlap_cor$below_lod_soma_non_normal[i] <- sum(somascan_non_normalised[[overlap_cor$somascan_id[i]]]<soma_lod$lod[soma_lod$somascan_id==overlap_cor$somascan_id[i]])/nrow(somascan_non_normalised)
 }
 
+# saveRDS(overlap_cor,"overlap_cor_annot_mid.RDS")
+# overlap_cor <- readRDS("overlap_cor_annot_mid.RDS")
+
 # kdm
 
 soma_kd <-soma_extra[,c("SeqId","Apparent.Kd..M.")]
@@ -201,7 +206,7 @@ overlap_cor <- merge(overlap_cor, soma_lod, by = "somascan_id")
 
 ##### other variables for olink
 
-olink_extra <- read.csv("olink_extra_info.csv")
+olink_extra <- read.csv("")
 olink_extra <- olink_extra[!duplicated(olink_extra$UniProt),]
 
 # dilution
@@ -236,6 +241,30 @@ olink_dilution <- olink_dilution[,-which(names(olink_dilution) %in% "dilution_ol
 overlap_cor <- merge(overlap_cor,olink_dilution,by="uniprot_id")
 
 saveRDS(overlap_cor,"overlap_cor_annot_mid.RDS")
+# overlap_cor <- readRDS("overlap_cor_annot_mid.RDS")
+
+## calculate CV
+
+# cv_olink <- data.frame(colMeans(olink[, 2:ncol(olink)]))
+# names(cv_olink) <- "mean"
+# cv_olink$olink_id <- row.names(cv_olink)
+# cv_olink$sd <- sapply(olink[, 2:ncol(olink)], sd)
+# cv_olink$cv_olink <- cv_olink$sd/cv_olink$mean
+# overlap_cor <- merge(overlap_cor, cv_olink[,c("olink_id","cv_olink")], by="olink_id")
+# 
+# cv_soma_normal <- data.frame(colMeans(somascan_normalised_log[, 2:ncol(somascan_normalised_log)]))
+# names(cv_soma_normal) <- "mean"
+# cv_soma_normal$somascan_id <- row.names(cv_soma_normal)
+# cv_soma_normal$sd <- sapply(somascan_normalised_log[, 2:ncol(somascan_normalised_log)], sd)
+# cv_soma_normal$cv_soma_normal <- cv_soma_normal$sd/cv_soma_normal$mean
+# overlap_cor <- merge(overlap_cor, cv_soma_normal[,c("somascan_id","cv_soma_normal")], by="somascan_id")
+# 
+# cv_soma_non_normal <- data.frame(colMeans(somascan_non_normalised_log[, 2:ncol(somascan_non_normalised_log)]))
+# names(cv_soma_non_normal) <- "mean"
+# cv_soma_non_normal$somascan_id <- row.names(cv_soma_non_normal)
+# cv_soma_non_normal$sd <- sapply(somascan_non_normalised_log[, 2:ncol(somascan_non_normalised_log)], sd)
+# cv_soma_non_normal$cv_soma_non_normal <- cv_soma_non_normal$sd/cv_soma_non_normal$mean
+# overlap_cor <- merge(overlap_cor, cv_soma_non_normal[,c("somascan_id","cv_soma_non_normal")], by="somascan_id")
 
 # get uniprot annotations
 # first define fields we need
@@ -361,7 +390,7 @@ overlap_1_to_1_annot$n_isoform[is.na(overlap_1_to_1_annot$n_isoform)] <- 1
 overlap_1_to_1_annot <- overlap_1_to_1_annot[ , -which(names(overlap_1_to_1_annot) %in% "Alternative.products..isoforms.")]
 
 # merge with shared cis-pQTL
-overlap_coloc <- read.csv("overlap_coloc.csv")
+overlap_coloc <- read.csv("")
 overlap_coloc <- overlap_coloc[,c("uniprot_id","coloc_normal_cis_tf","coloc_non_normal_cis_tf","coloc_normal_trans_tf","coloc_non_normal_trans_tf")]
 overlap_1_to_1_annot <- merge(overlap_1_to_1_annot,overlap_coloc,by="uniprot_id")
 
@@ -407,3 +436,36 @@ saveRDS(overlap_1_to_1_annot_normal,"overlap_1_to_1_annot_normal.RDS")
 overlap_1_to_1_annot_non_normal <- overlap_1_to_1_annot[,c(10,5,15:25,26,28,29,31,32,34,35:38,39,41,43,44:49,50:105)]
 names(overlap_1_to_1_annot_non_normal)
 saveRDS(overlap_1_to_1_annot_non_normal,"overlap_1_to_1_annot_non_normal.RDS")
+
+
+
+
+
+
+## check
+overlap_1_to_1_annot_normal <- readRDS("overlap_1_to_1_annot_normal.RDS")
+plot(overlap_1_to_1_annot_normal$kurtosis_olink,overlap_1_to_1_annot_normal$rho_olink_soma_normal)
+plot(overlap_1_to_1_annot_normal$skewness_olink,overlap_1_to_1_annot_normal$rho_olink_soma_normal)
+plot(overlap_1_to_1_annot_normal$kurtosis_soma_normal,overlap_1_to_1_annot_normal$rho_olink_soma_normal)
+plot(overlap_1_to_1_annot_normal$skewness_soma_normal,overlap_1_to_1_annot_normal$rho_olink_soma_normal)
+
+
+
+
+
+## count number of proteins per go category
+
+names(overlap_1_to_1_annot)
+count_go <- data.frame(sapply(overlap_1_to_1_annot[75:104],sum))
+names(count_go)[1] <- "freq"
+# count_go$term <- row.names(count_go)
+count_go$percent <- count_go$freq/1694
+count_go
+
+
+
+overlap_1_to_1_annot[,50:105] %>%
+  tbl_summary(statistic = list(
+                all_continuous() ~ "{mean} {sd}",
+                all_categorical() ~ "{n} {p}"),
+              digits = everything() ~ 1)

@@ -1,3 +1,5 @@
+### this script tests associations between protein levels and baseline characteristics in ckb
+
 rm(list = ls())
 
 setwd("")
@@ -10,9 +12,7 @@ library(egg)
 ## load proteomics data
 
 olink <- read.csv("olink.csv")
-
 somascan_normalised_log <- read.csv("somascan_normalised_log.csv")
-
 somascan_non_normalised_log <- read.csv("somascan_non_normalised_log.csv")
 
 ## load overlapping proteins
@@ -33,18 +33,18 @@ somascan_non_normalised_log[,c(2:ncol(somascan_non_normalised_log))] <- scale(so
 
 ## load plate id
 
-olink_plate <- read.csv("C:/Users/Baihanw/OneDrive - Nexus365/Documents/data/DAR-2023-00301-V2/data_baseline_olink_plates.csv")
+olink_plate <- read.csv("")
 olink_plate <- olink_plate[olink_plate$panel_full=="Cardiometabolic",c(1,5)]
 names(olink_plate)[2] <- "olink_plt_id"
 
-somascan_plate <- read.csv("C:/Users/Baihanw/OneDrive - Nexus365/Documents/data/DAR-2023-00301-V2/data_baseline_somalogic_samples.csv")[c("csid","qc","plateid")]
+somascan_plate <- read.csv("")[c("csid","qc","plateid")]
 somascan_plate <- somascan_plate[somascan_plate$qc==0,]
 somascan_plate <- somascan_plate[c(1,3)]
 names(somascan_plate)[2] <- "somascan_plt_id"
 
 ## load other variables
 
-baseline <- read.csv("C:/Users/Baihanw/OneDrive - Nexus365/Documents/data/DAR-2023-00301-V2/data_baseline_questionnaires.csv")
+baseline <- read.csv("")
 
 names(baseline)
 
@@ -102,7 +102,7 @@ summary(baseline_var$married)
 table(baseline_var$highest_education)
 sum(is.na(baseline_var$highest_education))
 baseline_var$school <- 1
-baseline_var$school[baseline_var$highest_education==1 | baseline_var$highest_education==2] <- 0
+baseline_var$school[baseline_var$highest_education==0 | baseline_var$highest_education==1] <- 0
 baseline_var$school <- factor(baseline_var$school)
 summary(baseline_var$school)
 
@@ -153,14 +153,16 @@ summary(baseline_var$alcohol_regular_vs_occasion)
 
 ## load ascertainment
 
-ascertainment <- read.csv("data_baseline_ascertainments.csv")
+ascertainment <- read.csv("")
 table(ascertainment$olinkexp1536_chd_b1_subcohort)
 ascertainment <- ascertainment[,c("csid","olinkexp1536_chd_b1_subcohort")]
 names(ascertainment) <- c("csid","ascertainment")
 ascertainment <- ascertainment[!is.na(ascertainment$ascertainment),]
 ascertainment$ascertainment <- factor(ascertainment$ascertainment,levels=c("1","0"))
 table(ascertainment$ascertainment)
+# subcohort_id <- ascertainment$csid[ascertainment$olinkexp1536_chd_b1_subcohort==1]
 
+## load blood sample processing time
 
 ## merge
 
@@ -175,6 +177,9 @@ somascan_normalised_log_pheno <- merge(somascan_normalised_log_pheno, ascertainm
 somascan_non_normalised_log_pheno <- merge(somascan_non_normalised_log, baseline_var, by="csid", all.x=T)
 somascan_non_normalised_log_pheno <- merge(somascan_non_normalised_log_pheno, somascan_plate, by="csid", all.x=T)
 somascan_non_normalised_log_pheno <- merge(somascan_non_normalised_log_pheno, ascertainment, by="csid", all.x=T)
+
+# keep same participants
+olink_pheno <- olink_pheno[olink_pheno$csid %in% somascan_normalised_log_pheno$csid, ]
 
 # save
 write.csv(olink_pheno, "olink_pheno.csv", row.names = F, quote = F)
@@ -444,8 +449,8 @@ for (x in 1:length(variable)) {
   
 }
 
-
 write.csv(overlap_assoc, "overlap_assoc.csv", row.names = F, quote = F)
+
 
 # keep 1 to 1
 

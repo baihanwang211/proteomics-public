@@ -1,3 +1,5 @@
+### this script runs Boruta feature selection on HPC cluster
+
 rm(list = ls())
 
 setwd("")

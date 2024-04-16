@@ -1,3 +1,5 @@
+### this script finds the overlapping proteins between Olink and SomaScan based on UniProt IDs
+
 rm(list = ls())
 
 setwd("")
@@ -91,7 +93,7 @@ length(unique(c(somascan_protein$uniprot_id_1,somascan_protein$uniprot_id_2,soma
 
 venn.diagram(
   list(Olink = 1:2923, SomaScan = 756:7152),
-  filename = 'venn_diagram.png',
+  filename = 'K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram.png',
   fontfamily = "sans",	cat.fontfamily = "sans",
   category.names = c("Olink Explore 3072" , "SomaScan Assay v4.1"),
   height = 2500, 
@@ -102,7 +104,7 @@ venn.diagram(
 
 venn.diagram(
   list(Olink = 1:2923, SomaScan = 756:7152),
-  filename = 'venn_diagram_big_font.png',
+  filename = 'K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/venn_diagram_big_font.png',
   fontfamily = "sans",	cat.fontfamily = "sans",
   category.names = c("" , ""),
   height = 1250, 
@@ -118,9 +120,12 @@ table(overlap$organism) # check if they are human proteins (they all are)
 
 overlap <- overlap[,-which(names(overlap) %in% "organism")]
 
-write.csv(overlap,"overlap.csv", quote=F, row.names=F)
+write.csv(overlap,"K:/kadoorie/Staff_Folders/BaihanW/proteomics/data/overlap.csv", quote=F, row.names=F)
 
 
+# load 
+
+# overlap <- read.csv("overlap.csv")
 
 ## find one to one proteins
 

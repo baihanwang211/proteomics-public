@@ -1,3 +1,5 @@
+### this script estimates the observational correlations between Olink and SomaScan protein measurements
+
 rm(list = ls())
 
 setwd("")
@@ -13,6 +15,7 @@ library(ggthemes)
 library(datawizard)
 library(ckbplotr)
 library(scales)
+library(reshape2)
 
 ######################## load raw, transformed and cleaned somascan data
 
@@ -23,6 +26,7 @@ somascan_normalised <- read.csv("somascan_normalised.csv")
 somascan_non_normalised <- read.csv("somascan_non_normalised.csv")
 somascan_normalised_log <- read.csv("somascan_normalised_log.csv")
 somascan_non_normalised_log <- read.csv("somascan_non_normalised_log.csv")
+
 
 ########## check correlation
 
@@ -99,10 +103,82 @@ for (i in 1:nrow(overlap_cor_ci)) {
   
 }
 
-
-# save
-
 # overlap_cor <- read.csv("overlap_cor.csv")
+
+# calculate median rho
+
+median(overlap_cor$rho_olink_soma_normal)
+median(overlap_cor$rho_olink_soma_non_normal)
+
+# also try the weighted mean method
+
+weighted <- aggregate(overlap_cor$rho_olink_soma_normal,by=list(overlap_cor$uniprot_id),data=overlap_cor,FUN=mean)
+names(weighted) <- c("uniprot_id","rho_olink_soma_normal")
+median(weighted$rho_olink_soma_normal)
+
+# spearman olink vs soma
+
+plot_rho_olink_soma_normal <- ggplot(overlap_cor, aes(x=rho_olink_soma_normal)) + 
+  geom_histogram(binwidth = 0.05,boundary=0,color="black",fill="white") +
+  scale_x_continuous(breaks = seq(-0.6, 1, 0.2), lim = c(-0.6, 1), labels = label_number(accuracy = 0.1)) +
+  ylim(0,450) +
+  annotate("text", x = 0.5, y = 200, label = "Median rho = 0.23", size = 12/.pt) +
+  geom_vline(aes(xintercept=median(rho_olink_soma_normal)),color="black", linetype="dashed", linewidth=1) +
+  ggtitle("Olink vs SomaScan-ANML", subtitle ="") + xlab("Spearman's rho") + ylab("Frequency") +
+  theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
+  theme(plot.title = element_text(size = 18), text = element_text(size = 14))  
+
+plot_rho_olink_soma_normal
+
+plot_rho_olink_soma_non_normal <- ggplot(overlap_cor, aes(x=rho_olink_soma_non_normal)) + 
+  geom_histogram(binwidth = 0.05,boundary=0,color="black",fill="white") +
+  scale_x_continuous(breaks = seq(-0.6, 1, 0.2), lim = c(-0.6, 1), labels = label_number(accuracy = 0.1)) +
+  ylim(0,450) +
+  annotate("text", x = 0.55, y = 200, label = "Median rho = 0.29", size = 12/.pt) +
+  geom_vline(aes(xintercept=median(rho_olink_soma_non_normal)),color="black", linetype="dashed", linewidth=1) +
+  ggtitle("Olink vs SomaScan-non-ANML", subtitle ="") + xlab("Spearman's rho") + ylab("Frequency") +
+  theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
+  theme(plot.title = element_text(size = 18),text = element_text(size = 14))  
+
+plot_rho_olink_soma_non_normal
+
+plot_rho_olink_soma <- ggarrange(plot_rho_olink_soma_normal,plot_rho_olink_soma_non_normal,ncol=2,nrow=1)
+
+ggsave("",plot_rho_olink_soma,width=14,height=6)
+
+# pearson olink vs soma
+
+median(overlap_cor$r_olink_soma_normal_log)
+median(overlap_cor$r_olink_soma_non_normal_log)
+
+plot_r_olink_soma_normal <- ggplot(overlap_cor, aes(x=r_olink_soma_normal_log)) + 
+  geom_histogram(binwidth = 0.05,boundary=0,color="black",fill="white") +
+  scale_x_continuous(breaks = seq(-0.6, 1, 0.2), lim = c(-0.6, 1), labels = label_number(accuracy = 0.1)) +
+  ylim(0,500) +
+  annotate("text", x = 0.4, y = 200, label = "Median r = 0.17", size = 12/.pt) +
+  geom_vline(aes(xintercept=median(r_olink_soma_normal_log)),color="black", linetype="dashed", linewidth=1) +
+  ggtitle("Olink vs SomaScan-ANML", subtitle ="") + xlab("Pearson's r") + ylab("Frequency") +
+  theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
+  theme(plot.title = element_text(size = 18), text = element_text(size = 14))  
+
+plot_r_olink_soma_normal
+
+plot_r_olink_soma_non_normal <- ggplot(overlap_cor, aes(x=r_olink_soma_non_normal_log)) + 
+  geom_histogram(binwidth = 0.05,boundary=0,color="black",fill="white") +
+  scale_x_continuous(breaks = seq(-0.6, 1, 0.2), lim = c(-0.6, 1), labels = label_number(accuracy = 0.1)) +
+  ylim(0,500) +
+  annotate("text", x = 0.5, y = 200, label = "Median r = 0.23", size = 12/.pt) +
+  geom_vline(aes(xintercept=median(r_olink_soma_non_normal_log)),color="black", linetype="dashed", linewidth=1) +
+  ggtitle("Olink vs SomaScan-non-ANML", subtitle ="") + xlab("Pearson's r") + ylab("Frequency") +
+  theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
+  theme(plot.title = element_text(size = 18),text = element_text(size = 14))  
+
+plot_r_olink_soma_non_normal
+
+plot_r_olink_soma <- ggarrange(plot_r_olink_soma_normal,plot_r_olink_soma_non_normal,ncol=2,nrow=1)
+
+ggsave("",plot_r_olink_soma,width=14,height=6)
+
 
 # only keep 1_to_1
 
@@ -113,7 +189,6 @@ aptamer_dup <- unique(overlap_cor$somascan_id[duplicated(overlap_cor$somascan_id
 overlap_1_to_1_cor <- overlap_cor[-c(which(overlap_cor$uniprot_id %in% protein_dup),which(overlap_cor$somascan_id %in% aptamer_dup)), ]
 
 write.csv(overlap_1_to_1_cor,"overlap_1_to_1_cor.csv", quote=F, row.names=F)
-
 
 ##################################### get median
 
@@ -138,7 +213,7 @@ plot_rho_olink_soma_normal <- ggplot(overlap_1_to_1_cor, aes(x=rho_olink_soma_no
   ylim(0,300) +
   annotate("text", x = 0.4, y = 200, label = "Median rho = 0.20", size = 12/.pt) +
   geom_vline(aes(xintercept=median(rho_olink_soma_normal)),color="black", linetype="dashed", linewidth=1) +
-  ggtitle("OLINK vs SomaScan-ANML", subtitle ="") + xlab("Spearman's rho") + ylab("Frequency") +
+  ggtitle("Olink vs SomaScan-ANML", subtitle ="") + xlab("Spearman's rho") + ylab("Frequency") +
   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
   theme(plot.title = element_text(size = 18), text = element_text(size = 14))  
 
@@ -150,7 +225,7 @@ plot_rho_olink_soma_non_normal <- ggplot(overlap_1_to_1_cor, aes(x=rho_olink_som
   ylim(0,300) +
   annotate("text", x = 0.5, y = 200, label = "Median rho = 0.26", size = 12/.pt) +
   geom_vline(aes(xintercept=median(rho_olink_soma_non_normal)),color="black", linetype="dashed", linewidth=1) +
-  ggtitle("OLINK vs SomaScan-non-ANML", subtitle ="") + xlab("Spearman's rho") + ylab("Frequency") +
+  ggtitle("Olink vs SomaScan-non-ANML", subtitle ="") + xlab("Spearman's rho") + ylab("Frequency") +
   theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
   theme(plot.title = element_text(size = 18),text = element_text(size = 14))  
 
@@ -158,9 +233,38 @@ plot_rho_olink_soma_non_normal
 
 plot_rho_olink_soma <- ggarrange(plot_rho_olink_soma_normal,plot_rho_olink_soma_non_normal,ncol=2,nrow=1)
 
-ggsave("plot_rho_olink_soma_1_to_1.png",plot_rho_olink_soma,width=14,height=6)
+ggsave("",plot_rho_olink_soma,width=14,height=6)
 
 ## pearson olink vs soma
+
+plot_r_olink_soma_normal <- ggplot(overlap_1_to_1_cor, aes(x=r_olink_soma_normal_log)) + 
+  geom_histogram(binwidth = 0.05,boundary=0,color="black",fill="white") +
+  scale_x_continuous(breaks = seq(-0.2, 1, 0.2), lim = c(-0.2, 1), labels = label_number(accuracy = 0.1)) +
+  ylim(0,400) +
+  annotate("text", x = 0.4, y = 200, label = "Median r = 0.15", size = 12/.pt) +
+  geom_vline(aes(xintercept=median(r_olink_soma_normal_log)),color="black", linetype="dashed", linewidth=1) +
+  ggtitle("Olink vs SomaScan-ANML", subtitle ="") + xlab("Pearson's r") + ylab("Frequency") +
+  theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
+  theme(plot.title = element_text(size = 18), text = element_text(size = 14))  
+
+plot_r_olink_soma_normal
+
+plot_r_olink_soma_non_normal <- ggplot(overlap_1_to_1_cor, aes(x=r_olink_soma_non_normal_log)) + 
+  geom_histogram(binwidth = 0.05,boundary=0,color="black",fill="white") +
+  scale_x_continuous(breaks = seq(-0.2, 1, 0.2), lim = c(-0.2, 1), labels = label_number(accuracy = 0.1)) +
+  ylim(0,400) +
+  annotate("text", x = 0.4, y = 200, label = "Median r = 0.20", size = 12/.pt) +
+  geom_vline(aes(xintercept=median(r_olink_soma_non_normal_log)),color="black", linetype="dashed", linewidth=1) +
+  ggtitle("Olink vs SomaScan-non-ANML", subtitle ="") + xlab("Pearson's r") + ylab("Frequency") +
+  theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
+  theme(plot.title = element_text(size = 18),text = element_text(size = 14))  
+
+plot_r_olink_soma_non_normal
+
+plot_r_olink_soma <- ggarrange(plot_r_olink_soma_normal,plot_r_olink_soma_non_normal,ncol=2,nrow=1)
+
+ggsave("",plot_r_olink_soma,width=14,height=6)
+
 
 # overlay
 
@@ -174,7 +278,7 @@ plot_r_olink_soma_normal <- ggplot(r_olink_soma_normal, aes(x=value,fill=name)) 
   geom_histogram(binwidth = 0.05,alpha=0.5,boundary=0,position="identity") +
   scale_x_continuous(breaks = seq(-0.4, 1, 0.2), lim = c(-0.4, 1)) +
   ylim(0,500) +
-  ggtitle("OLINK vs SomaScan-ANML", subtitle ="") + 
+  ggtitle("Olink vs SomaScan-ANML", subtitle ="") + 
   xlab("Pearson's r") + 
   ylab("Frequency") +
   scale_fill_discrete(name = "Log-transformation", labels = c("Before", "After")) +
@@ -192,7 +296,7 @@ plot_r_olink_soma_non_normal <- ggplot(r_olink_soma_non_normal, aes(x=value,fill
   geom_histogram(binwidth = 0.05,alpha=0.5,boundary=0,position="identity") +
   scale_x_continuous(breaks = seq(-0.4, 1, 0.2), lim = c(-0.4, 1)) +
   ylim(0,500) +
-  ggtitle("OLINK vs SomaScan-non-ANML", subtitle ="") + 
+  ggtitle("Olink vs SomaScan-non-ANML", subtitle ="") + 
   xlab("Pearson's r") + 
   ylab("Frequency") +
   scale_fill_discrete(name = "Log-transformation", labels = c("Before", "After")) +
@@ -204,13 +308,11 @@ plot_r_olink_soma_non_normal
 
 plot_r_olink_soma_overlay <- ggarrange(plot_r_olink_soma_normal,plot_r_olink_soma_non_normal,ncol=1,nrow=2)
 
-ggsave("plot_r_olink_soma_overlay_1_to_1.png",plot_r_olink_soma_overlay,width=8,height=10)
-
-
+ggsave("",plot_r_olink_soma_overlay,width=8,height=10)
 
 ## separate
 
-olink_extra <- read.csv("olink_extra_info.csv")
+olink_extra <- read.csv("K:/kadoorie/Staff_Folders/BaihanW/proteomics/olink_extra_info.csv")
 olink_extra <- olink_extra[!duplicated(olink_extra$UniProt),]
 
 # dilution
@@ -260,7 +362,7 @@ table_3 <- overlap_1_to_1_cor %>%
 table_3
 
 
-# batch
+# by batch
 
 # normalised
 
@@ -273,10 +375,11 @@ for (x in 1:2){
     geom_histogram(binwidth = 0.05,boundary=0,color="black",fill="white") +
     scale_x_continuous(breaks = seq(-0.4, 1, 0.2), lim = c(-0.4, 1), labels = label_number(accuracy = 0.1)) +
     ylim(0,300) +
-    ggtitle(paste0("OLINK (batch ",batch[x],") vs SomaScan-ANML"), subtitle ="")  + 
+    ggtitle(paste0("Olink (batch ",batch[x],") vs SomaScan-ANML"), subtitle ="")  + 
     xlab("Spearman's rho") + 
     ylab("Frequency") +  
     geom_vline(aes(xintercept=median(rho_olink_soma_normal)),color="black", linetype="dashed", linewidth=1) +
+    # annotate("text", x = 0.7, y = 300, label = paste("Median rho =", medians[x]), size = 12/.pt) +
     theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
     theme(text = element_text(size = 13))
   i <- i+1
@@ -284,7 +387,7 @@ for (x in 1:2){
 
 olink_somascan_batch_normal <- ggarrange(olink_somascan_batch_normal_list[[1]],olink_somascan_batch_normal_list[[2]],ncol=2,nrow=1)
 
-ggsave("olink_somascan_batch_normal.png",olink_somascan_batch_normal,width=10,height=4.5)
+ggsave("",olink_somascan_batch_normal,width=10,height=4.5)
 
 
 # non_normalised
@@ -300,9 +403,10 @@ for (x in 1:2){
     geom_histogram(binwidth = 0.05,boundary=0,color="black",fill="white") +
     scale_x_continuous(breaks = seq(-0.4, 1, 0.2), lim = c(-0.4, 1), labels = label_number(accuracy = 0.1)) +
     ylim(0,300) +
-    ggtitle(paste0("OLINK (batch ",batch[x],") vs SomaScan-non-ANML"), subtitle ="")  + 
+    ggtitle(paste0("Olink (batch ",batch[x],") vs SomaScan-non-ANML"), subtitle ="")  + 
     xlab("Spearman's rho") + 
     ylab("Frequency") +
+    # annotate("text", x = 0.7, y = 300, label = paste("Median rho =", medians[x]), size = 12/.pt) +
     geom_vline(aes(xintercept=median(rho_olink_soma_non_normal)),color="black", linetype="dashed", linewidth=1) +
     theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
     theme(text = element_text(size = 13))
@@ -311,11 +415,11 @@ for (x in 1:2){
 
 olink_somascan_batch_non_normal <- ggarrange(olink_somascan_batch_non_normal_list[[1]],olink_somascan_batch_non_normal_list[[2]],ncol=2,nrow=1)
 
-ggsave("olink_somascan_batch_non_normal.png",olink_somascan_batch_non_normal,width=10,height=4.5)
+ggsave("",olink_somascan_batch_non_normal,width=10,height=4.5)
 
 
 
-# dilution
+# by SomaScan dilution
 
 # normalised
 
@@ -328,10 +432,11 @@ for (y in 1:3){
     geom_histogram(binwidth = 0.05,boundary=0,color="black",fill="white") +
     scale_x_continuous(breaks = seq(-0.4, 1, 0.2), lim = c(-0.4, 1), labels = label_number(accuracy = 0.1)) +
     ylim(0,250) +
-    ggtitle(paste0("OLINK vs SomaScan (",dilution_label[y], ", ANML)"), subtitle ="")  + 
+    ggtitle(paste0("Olink vs SomaScan (",dilution_label[y], ", ANML)"), subtitle ="")  + 
     xlab("Spearman's rho") + 
     ylab("Frequency") +
     geom_vline(aes(xintercept=median(rho_olink_soma_normal)),color="black", linetype="dashed", linewidth=1) +
+    # annotate("text", x = 0.35, y = 300, label = paste("Median rho =", medians[y]), size = 12/.pt) +
     theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
     theme(text = element_text(size = 13))
   i <- i+1
@@ -339,7 +444,7 @@ for (y in 1:3){
 
 olink_somascan_dilution_normal <- ggarrange(olink_somascan_dilution_normal_list[[1]],olink_somascan_dilution_normal_list[[2]],olink_somascan_dilution_normal_list[[3]],ncol=3,nrow=1)
 
-ggsave("olink_somascan_dilution_normal.png",olink_somascan_dilution_normal,width=15,height=4.5)
+ggsave("",olink_somascan_dilution_normal,width=15,height=4.5)
 
 
 # non_normalised
@@ -353,10 +458,11 @@ for (y in 1:3){
     geom_histogram(binwidth = 0.05,boundary=0,color="black",fill="white") +
     scale_x_continuous(breaks = seq(-0.4, 1, 0.2), lim = c(-0.4, 1), labels = label_number(accuracy = 0.1)) +
     ylim(0,250) +
-    ggtitle(paste0("OLINK vs SomaScan (",dilution_label[y], ", non-ANML)"), subtitle ="")  + 
+    ggtitle(paste0("Olink vs SomaScan (",dilution_label[y], ", non-ANML)"), subtitle ="")  + 
     xlab("Spearman's rho") + 
     ylab("Frequency") +
     geom_vline(aes(xintercept=median(rho_olink_soma_non_normal)),color="black", linetype="dashed", linewidth=1) +
+    # annotate("text", x = 0.42, y = 300, label = paste("Median rho =", medians[y]), size = 12/.pt) +
     theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
     theme(text = element_text(size = 13))
   i <- i+1
@@ -364,18 +470,17 @@ for (y in 1:3){
 
 olink_somascan_dilution_non_normal <- ggarrange(olink_somascan_dilution_non_normal_list[[1]],olink_somascan_dilution_non_normal_list[[2]],olink_somascan_dilution_non_normal_list[[3]],ncol=3,nrow=1)
 
-ggsave("olink_somascan_dilution_non_normal.png",olink_somascan_dilution_non_normal,width=15,height=4.5)
+ggsave("",olink_somascan_dilution_non_normal,width=15,height=4.5)
 
 olink_somascan_dilution <- ggarrange(olink_somascan_dilution_normal_list[[1]],olink_somascan_dilution_normal_list[[2]],olink_somascan_dilution_normal_list[[3]],
                                      olink_somascan_dilution_non_normal_list[[1]],olink_somascan_dilution_non_normal_list[[2]],olink_somascan_dilution_non_normal_list[[3]],
                                      ncol=3,nrow=2)
 
-ggsave("olink_somascan_dilution.png",olink_somascan_dilution,width=15,height=9)
+ggsave("",olink_somascan_dilution,width=15,height=9)
 
 
 
-
-# olink dilution
+# by olink dilution
 
 # normalised
 
@@ -388,10 +493,11 @@ for (y in 1:5){
     geom_histogram(binwidth = 0.05,boundary=0,color="black",fill="white") +
     scale_x_continuous(breaks = seq(-0.4, 1, 0.2), lim = c(-0.4, 1), labels = label_number(accuracy = 0.1)) +
     ylim(0,250) +
-    ggtitle(paste0("OLINK vs SomaScan (",dilution_olink_label[y], ", ANML)"), subtitle ="")  + 
+    ggtitle(paste0("Olink vs SomaScan (",dilution_olink_label[y], ", ANML)"), subtitle ="")  + 
     xlab("Spearman's rho") + 
     ylab("Frequency") +
     geom_vline(aes(xintercept=median(rho_olink_soma_normal)),color="black", linetype="dashed", linewidth=1) +
+    # annotate("text", x = 0.35, y = 300, label = paste("Median rho =", medians[y]), size = 12/.pt) +
     theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
     theme(text = element_text(size = 13))
   i <- i+1
@@ -404,7 +510,7 @@ olink_somascan_dilution_olink_normal <- ggarrange(olink_somascan_dilution_olink_
                                                   olink_somascan_dilution_olink_normal_list[[5]],
                                                   ncol=5,nrow=1)
 
-ggsave("olink_somascan_dilution_olink_normal.png",olink_somascan_dilution_olink_normal,width=25,height=4.5)
+ggsave("",olink_somascan_dilution_olink_normal,width=25,height=4.5)
 
 
 # non_normalised
@@ -420,7 +526,7 @@ for (y in 1:5){
     geom_histogram(binwidth = 0.05,boundary=0,color="black",fill="white") +
     scale_x_continuous(breaks = seq(-0.4, 1, 0.2), lim = c(-0.4, 1), labels = label_number(accuracy = 0.1)) +
     ylim(0,250) +
-    ggtitle(paste0("OLINK vs SomaScan (",dilution_olink_label[y], ", non-ANML)"), subtitle ="")  + 
+    ggtitle(paste0("Olink vs SomaScan (",dilution_olink_label[y], ", non-ANML)"), subtitle ="")  + 
     xlab("Spearman's rho") + 
     ylab("Frequency") +
     geom_vline(aes(xintercept=median(rho_olink_soma_non_normal)),color="black", linetype="dashed", linewidth=1) +
@@ -437,7 +543,7 @@ olink_somascan_dilution_olink_non_normal <- ggarrange(olink_somascan_dilution_ol
                                                       olink_somascan_dilution_olink_non_normal_list[[5]],
                                                       ncol=5,nrow=1)
 
-ggsave("olink_somascan_dilution_olink_non_normal.png",olink_somascan_dilution_olink_non_normal,width=25,height=4.5)
+ggsave("",olink_somascan_dilution_olink_non_normal,width=25,height=4.5)
 
 olink_somascan_dilution_olink <- ggarrange(olink_somascan_dilution_olink_normal_list[[1]],
                                            olink_somascan_dilution_olink_normal_list[[2]],
@@ -451,38 +557,104 @@ olink_somascan_dilution_olink <- ggarrange(olink_somascan_dilution_olink_normal_
                                            olink_somascan_dilution_olink_non_normal_list[[5]],
                                            ncol=5,nrow=2)
 
-ggsave("olink_somascan_dilution_olink.png",olink_somascan_dilution_olink,width=25,height=9)
+ggsave("K:/kadoorie/Staff_Folders/BaihanW/proteomics/results/olink_somascan_dilution_olink.png",olink_somascan_dilution_olink,width=25,height=9)
 
 
 
 
+################### correlation between all possible pairs
+
+olink_overlap <- olink[,names(olink) %in% overlap$olink_id]
+olink_overlap <- olink_overlap[, unique(overlap$olink_id)]
+olink_overlap <- cbind(olink$csid,olink_overlap)
+names(olink_overlap)[1] <- "csid"
+
+somascan_normalised_log_overlap <- somascan_normalised_log[,names(somascan_normalised_log) %in% overlap$somascan_id]
+somascan_normalised_log_overlap <- somascan_normalised_log_overlap[, unique(overlap$somascan_id)]
+somascan_normalised_log_overlap <- cbind(somascan_normalised_log$csid,somascan_normalised_log_overlap)
+names(somascan_normalised_log_overlap)[1] <- "csid"
+
+olink_overlap <- olink_overlap[olink_overlap$csid %in% somascan_normalised_log_overlap$csid,]
+
+somascan_non_normalised_log_overlap <- somascan_non_normalised_log[,names(somascan_non_normalised_log) %in% overlap$somascan_id]
+somascan_non_normalised_log_overlap <- somascan_non_normalised_log_overlap[, unique(overlap$somascan_id)]
+somascan_non_normalised_log_overlap <- cbind(somascan_non_normalised_log$csid,somascan_non_normalised_log_overlap)
+names(somascan_non_normalised_log_overlap)[1] <- "csid"
+
+## normal
+
+# correlation matrix
+cor_mat_normal <- cor(olink_overlap[,-1], somascan_normalised_log_overlap[,-1], method="spearman")
+# heatmap(cor_mat,Rowv=NA,Colv=NA,labRow=NA,labCol=NA, xlab="SomaScan", ylab="OLINK")
+
+cordata_normal = melt(cor_mat_normal)
+
+heatmap_normal <- ggplot(cordata_normal, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() + xlab("Olink") + ylab("SomaScan-ANML") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+  labs(fill="Spearman's rho") +
+  scale_fill_gradient2(low="blue", high="red" )
+
+ggsave("",heatmap_normal,width=8,height=6)
+
+# check the most correlated pair against the matching based on UniProt
+cordata_normal_olink <- cordata_normal[order(cordata_normal$Var1,-cordata_normal$value),]
+cordata_normal_olink <-cordata_normal_olink[!duplicated(cordata_normal_olink$Var1),]
+
+cordata_normal_soma <- cordata_normal[order(cordata_normal$Var2,-cordata_normal$value),]
+cordata_normal_soma <- cordata_normal_soma[!duplicated(cordata_normal_soma$Var2),]
+
+cordata_normal_match <- merge(cordata_normal_olink,cordata_normal_soma,by=c("Var1","Var2","value"))
+names(cordata_normal_match) <- c("olink_id","somascan_id","rho")
+nrow(cordata_normal_match)
+write.csv(cordata_normal_match,"mutual_best_hits_normal.csv", quote=F, row.names=F)
+
+match_normal <- merge(cordata_normal_match, overlap, by=c("olink_id","somascan_id"))
+nrow(match_normal)
+
+## non-normal
+
+# correlation matrix
+cor_mat_non_normal <- cor(olink_overlap[,-1], somascan_non_normalised_log_overlap[,-1], method="spearman")
+# heatmap(cor_mat,Rowv=NA,Colv=NA,labRow=NA,labCol=NA, xlab="SomaScan", ylab="OLINK")
+
+cordata_non_normal = melt(cor_mat_non_normal)
+
+heatmap_non_normal <- ggplot(cordata_non_normal, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() + xlab("Olink") + ylab("SomaScan-non-ANML") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+  labs(fill="Spearman's rho") +
+  scale_fill_gradient2(low="blue", high="red" )
+
+ggsave("",heatmap_non_normal,width=8,height=6)
+
+heatmap <- ggarrange(heatmap_normal,
+                     heatmap_non_normal,
+                     ncol=2,nrow=1, common.legend = TRUE, legend="right")
+
+ggsave("",heatmap,width=14,height=6)
+
+
+# check the most correlated pair against the matching based on UniProt
+cordata_non_normal_olink <- cordata_non_normal[order(cordata_non_normal$Var1,-cordata_non_normal$value),]
+cordata_non_normal_olink <-cordata_non_normal_olink[!duplicated(cordata_non_normal_olink$Var1),]
+
+cordata_non_normal_soma <- cordata_non_normal[order(cordata_non_normal$Var2,-cordata_non_normal$value),]
+cordata_non_normal_soma <- cordata_non_normal_soma[!duplicated(cordata_non_normal_soma$Var2),]
+
+cordata_non_normal_match <- merge(cordata_non_normal_olink,cordata_non_normal_soma,by=c("Var1","Var2","value"))
+names(cordata_non_normal_match) <- c("olink_id","somascan_id","rho")
+nrow(cordata_non_normal_match)
+write.csv(cordata_non_normal_match,"mutual_best_hits_non_normal.csv", quote=F, row.names=F)
+
+match_non_normal <- merge(cordata_non_normal_match, overlap, by=c("olink_id","somascan_id"))
+nrow(match_non_normal)
 
 
 
-
-################ extra: correlation between soma
-
-for (i in 1:nrow(overlap_1_to_1_cor)) {
-  df <- merge(somascan_normalised_log[,c("csid",overlap_1_to_1_cor$somascan_id[i])],somascan_non_normalised_log[,c("csid",overlap_1_to_1_cor$somascan_id[i])],by="csid")
-  overlap_1_to_1_cor$rho_soma[i] <- cor.test(df[[2]], df[[3]], method = 'spearman')$estimate
-}
-
-min(overlap_1_to_1_cor$rho_soma)
-max(overlap_1_to_1_cor$rho_soma)
-median(overlap_1_to_1_cor$rho_soma)
-
-plot_rho_soma <- ggplot(overlap_1_to_1_cor, aes(x=rho_soma)) + 
-  geom_histogram(binwidth = 0.05,boundary=0,color="black",fill="white") +
-  scale_x_continuous(breaks = seq(0, 1, 0.2), lim = c(0, 1), labels = label_number(accuracy = 0.1)) +
-  ylim(0,350) +
-  annotate("text", x = 0.7, y = 300, label = "Median rho = 0.84", size = 12/.pt) +
-  geom_vline(aes(xintercept=median(rho_soma)),color="black", linetype="dashed", linewidth=1) +
-  ggtitle("SomaScan ANML vs non-ANML", subtitle ="") + xlab("Spearman's rho") + ylab("Frequency") +
-  theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
-  theme(text = element_text(size = 14))  
-
-plot_rho_soma
-
-ggsave("plot_rho_soma_1_to_1.png",plot_rho_soma,width=7,height=6)
-
-write.csv(overlap_1_to_1_cor,"overlap_1_to_1_cor_soma.csv", quote=F, row.names=F)

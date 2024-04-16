@@ -1,3 +1,5 @@
+### this script plots the results of Boruta
+
 rm(list = ls())
 
 setwd("")
@@ -119,56 +121,6 @@ boruta_normal_regress <- rbind(boruta_normal_regress,boruta_normal_extra)
 
 boruta_normal_melt_confirmed <- merge(boruta_normal_melt,boruta_normal_regress,by="variable",all.y = T)
 
-# plot
-
-xlevel <- levels(reorder(droplevels(boruta_normal_melt_confirmed$variable), boruta_normal_melt_confirmed$importance, FUN = median))
-
-hex <- brewer.pal(3,"Set1")[c(1,2)]
-
-boruta_normal_plot_confirmed <- ggplot(boruta_normal_melt_confirmed, aes(x=factor(variable,levels = xlevel), y=importance)) + 
-  geom_boxplot(aes(fill=factor(direction,levels=c("Positive","Inverse","Unconfirmed"))),lwd=0.2,outlier.size=0.2) + 
-  coord_flip() +
-  ylim(-5,45) +
-  ggtitle("OLINK vs SomaScan-ANML") +
-  xlab("Feature") +
-  ylab("Importance") +
-  labs(fill="Direction of association") +
-  theme_ckb() + theme(axis.line = element_line(),plot.background = element_rect(fill = "white", colour = NA)) +
-  theme(text = element_text(size = 12)) +
-  scale_x_discrete(labels=c("OLINK panel: Oncology I",
-                            "Protein mass",
-                            "OLINK panel: Inflammation II",
-                            "OLINK panel: Cardiometabolic II",
-                            "OLINK dilution: 1:100000",
-                            "OLINK panel: Neurology II",
-                            "OLINK dilution: 1:1000",
-                            "OLINK panel: Oncology II",
-                            "OLINK panel: Cardiometabolic I",
-                            "OLINK dilution: 1:100",
-                            "SomaScan dilution: 0.005%",
-                            "SomaScan dilution: 0.5%",
-                            "SomaScan Apparent Kd (M)",
-                            "SomaScan QC flag",
-                            "OLINK batch 2",
-                            "SomaScan dilution 20%",
-                            "OLINK dilution: 1:10",
-                            "OLINK mean on NPX scale",
-                            "OLINK % outliers",
-                            "OLINK skewness",
-                            "OLINK dilution: 1:1",
-                            "SomaScan mean on log scale",
-                            "OLINK QC warning",
-                            "OLINK kurtosis",
-                            "SomaScan % outliers",
-                            "SomaScan skewness",
-                            "SomaScan kurtosis",
-                            "OLINK % below LOD")) +
-  theme(legend.position = "none") +
-  scale_fill_manual(values=c(hex,"#808080"),
-                    labels=c("Positive","Inverse","Unconfirmed")) 
-
-boruta_normal_plot_confirmed
-
 
 ## non_normal
 
@@ -198,13 +150,7 @@ boruta_non_normal_regress$direction[boruta_non_normal_regress$coeff>0] <- "Posit
 
 boruta_non_normal_regress
 
-# add variables that are not in the ANML to the dataframe
-
-setdiff(unique(boruta_normal_melt_confirmed$variable),variable)
-
 boruta_non_normal_melt_confirmed <- merge(boruta_non_normal_melt,boruta_non_normal_regress,by="variable",all.y=T)
-
-# plot
 
 xlevel_non_normal <- str_replace(xlevel, "normal", "non_normal")
 
@@ -212,7 +158,7 @@ boruta_non_normal_plot_confirmed <- ggplot(boruta_non_normal_melt_confirmed, aes
   geom_boxplot(aes(fill=factor(direction,levels=c("Positive","Inverse","Rejected"))),lwd=0.2,outlier.size=0.2) + 
   coord_flip() +
   ylim(-5,45) +
-  ggtitle("OLINK vs SomaScan-non-ANML") +
+  ggtitle("Olink vs SomaScan-non-ANML") +
   xlab("") +
   ylab("Importance") +
   labs(fill="Direction of association") +
@@ -251,4 +197,4 @@ grid.newpage()
 combined <- gtable_cbind(fg12, fg3)
 grid.draw(combined)
 
-ggsave("boruta_plot_confirmed.png",combined,width=14,height=6)
+ggsave("",combined,width=14,height=6)
